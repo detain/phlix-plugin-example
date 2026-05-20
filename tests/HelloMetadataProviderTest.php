@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Phlex\PluginExample\Tests;
+namespace Phlix\PluginExample\Tests;
 
-use Phlex\PluginExample\HelloMetadataProvider;
+use Phlix\PluginExample\HelloMetadataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Smoke tests for the reference {@see HelloMetadataProvider} plugin.
  *
  * Mirrors the behavioural contract that the server-side
- * `SamplePluginSmokeTest` (in `detain/phlex`) asserts at the
+ * `SamplePluginSmokeTest` (in `detain/phlix`) asserts at the
  * integration boundary so the plugin can be developed in isolation
  * before it is published.
  */

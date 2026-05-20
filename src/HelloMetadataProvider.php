@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Phlex\PluginExample;
+namespace Phlix\PluginExample;
 
-use Phlex\Plugins\Contract\LifecycleInterface;
+use Phlix\Plugins\Contract\LifecycleInterface;
 use Psr\Container\ContainerInterface;
 
 /**
- * Reference metadata-provider plugin for Phlex.
+ * Reference metadata-provider plugin for Phlix.
  *
- * Demonstrates the smallest functional plugin that satisfies the Phlex
- * plugin contract introduced in Step A.4 of `PHLEX_EXPANSION_PLAN.md`.
+ * Demonstrates the smallest functional plugin that satisfies the Phlix
+ * plugin contract introduced in Step A.4 of `PHLIX_EXPANSION_PLAN.md`.
  * The plugin implements {@see LifecycleInterface} so the
- * `Phlex\Plugins\PluginLoader` can instantiate, enable, and disable it,
+ * `Phlix\Plugins\PluginLoader` can instantiate, enable, and disable it,
  * and exposes a {@see self::lookup()} method that returns a fixed
  * greeting for a well-known fixture path. The greeting itself is
  * configurable through the plugin's `greeting` setting in `plugin.json`.
@@ -34,14 +34,14 @@ use Psr\Container\ContainerInterface;
  *
  * ## Provenance
  *
- * The `LifecycleInterface` lives in `Phlex\Plugins\Contract` today;
+ * The `LifecycleInterface` lives in `Phlix\Plugins\Contract` today;
  * Step B.1 of the expansion plan moves it to
- * `Phlex\Shared\Plugin\LifecycleInterface`. When that ships this class
+ * `Phlix\Shared\Plugin\LifecycleInterface`. When that ships this class
  * will be republished against the new namespace; until then, plugin
  * authors targeting master pin to the current FQCN.
  *
- * @link https://github.com/detain/phlex/blob/master/docs/plugins/developer-guide.md Phlex plugin developer guide
- * @package Phlex\PluginExample
+ * @link https://github.com/detain/phlix/blob/master/docs/plugins/developer-guide.md Phlix plugin developer guide
+ * @package Phlix\PluginExample
  * @since 0.1.0
  */
 final class HelloMetadataProvider implements LifecycleInterface
@@ -127,7 +127,7 @@ final class HelloMetadataProvider implements LifecycleInterface
      * Returns the PSR-14 listener subscriptions this plugin wants.
      *
      * Metadata providers are invoked synchronously by
-     * `Phlex\Media\Metadata\MetadataManager` and therefore do not need
+     * `Phlix\Media\Metadata\MetadataManager` and therefore do not need
      * to subscribe to playback or library events. Returning an empty
      * array keeps the loader happy.
      *
@@ -148,7 +148,7 @@ final class HelloMetadataProvider implements LifecycleInterface
      * well-known {@see FIXTURE_PATH}; returns an empty array for any
      * other input. A production provider would parse the path, hit an
      * upstream API, and merge the response into the shape documented in
-     * `Phlex\Media\Metadata\MetadataProviderInterface::getDetails()`.
+     * `Phlix\Media\Metadata\MetadataProviderInterface::getDetails()`.
      *
      * @param string $filePath Absolute filesystem path of the media
      *     item the host wants metadata for.
