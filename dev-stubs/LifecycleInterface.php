@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phlex\Plugins\Contract;
+namespace Phlix\Plugins\Contract;
 
 use Psr\Container\ContainerInterface;
 
@@ -10,8 +10,8 @@ use Psr\Container\ContainerInterface;
  * Dev-only stub of the host server's lifecycle contract.
  *
  * Loaded by `tests/bootstrap.php` when the plugin is tested outside a
- * Phlex server checkout. Keep this file byte-compatible with the
- * canonical definition in `detain/phlex` at
+ * Phlix server checkout. Keep this file byte-compatible with the
+ * canonical definition in `detain/phlix` at
  * `src/Plugins/Contract/LifecycleInterface.php`.
  *
  * @internal Tests only — never autoloaded into production.
