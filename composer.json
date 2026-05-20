@@ -1,10 +1,10 @@
 {
-    "name": "phlex/plugin-example",
-    "type": "phlex-plugin",
-    "description": "Hello-world metadata provider — reference plugin for Phlex authors.",
+    "name": "phlix/plugin-example",
+    "type": "phlix-plugin",
+    "description": "Hello-world metadata provider — reference plugin for Phlix authors.",
     "license": "MIT",
-    "keywords": ["phlex", "phlex-plugin", "metadata-provider", "example"],
-    "homepage": "https://github.com/detain/phlex-plugin-example",
+    "keywords": ["phlix", "phlix-plugin", "metadata-provider", "example"],
+    "homepage": "https://github.com/detain/phlix-plugin-example",
     "require": {
         "php": ">=8.1",
         "psr/container": "^1.1 || ^2.0"
@@ -14,12 +14,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Phlex\\PluginExample\\": "src/"
+            "Phlix\\PluginExample\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Phlex\\PluginExample\\Tests\\": "tests/"
+            "Phlix\\PluginExample\\Tests\\": "tests/"
         }
     },
     "config": {
