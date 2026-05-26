@@ -6,13 +6,16 @@
     "keywords": ["phlix", "phlix-plugin", "metadata-provider", "example"],
     "homepage": "https://github.com/detain/phlix-plugin-example",
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.3",
         "psr/container": "^1.1 || ^2.0",
-        "detain/phlix-shared": "^0.2"
+        "detain/phlix-shared": "^0.6"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.0"
     },
+    "repositories": [
+        { "type": "vcs", "url": "https://github.com/detain/phlix-shared.git" }
+    ],
     "autoload": {
         "psr-4": {
             "Phlix\\PluginExample\\": "src/"
