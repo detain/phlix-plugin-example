@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Phlix Plugin Example">
+    <description>PSR-12 coding standard for phlix-plugin-example</description>
+    <file>src</file>
+    <exclude-pattern>vendor/</exclude-pattern>
+    <rule name="PSR12"/>
+</ruleset>

@@ -22,15 +22,15 @@ use Psr\Container\ContainerInterface;
  * progressively replace {@see lookup()} with real metadata lookups
  * against TMDB, TVDB, Fanart.tv, or any other source.
  *
- * ## Lifecycle notes
- *
- * - {@see onEnable()} keeps state minimal — it only stashes the host
- *   container so {@see lookup()} can resolve services lazily if a
- *   future implementation needs them.
- * - {@see subscribedEvents()} returns an empty array; this plugin does
- *   not listen for PSR-14 events. A real metadata provider can leave
- *   this empty too — Phase A's `MetadataManager` invokes providers
- *   directly rather than via the dispatcher.
+     * ## Lifecycle notes
+     *
+     * - {@see onEnable()} is a no-op for the reference plugin; it accepts
+     *   the host container to satisfy the contract but does not retain it.
+     *   Real plugins that need a container should store it as a property.
+     * - {@see subscribedEvents()} returns an empty array; this plugin does
+     *   not listen for PSR-14 events. A real metadata provider can leave
+     *   this empty too — Phase A's `MetadataManager` invokes providers
+     *   directly rather than via the dispatcher.
  *
  * ## Provenance
  *
@@ -66,15 +66,6 @@ final class HelloMetadataProvider implements LifecycleInterface
     private string $greeting;
 
     /**
-     * Host container handle stashed during {@see onEnable()}. Real
-     * provider implementations resolve `LoggerInterface`, HTTP clients,
-     * or cache services through it; the example does not yet need it
-     * but keeping the reference makes the extension point obvious for
-     * authors copying this class as a starter.
-     */
-    private ?ContainerInterface $container = null;
-
-    /**
      * @param string $greeting Override for the greeting returned by
      *     {@see lookup()}. Tests pass a custom value; production
      *     instantiations rely on the manifest default.
@@ -87,10 +78,8 @@ final class HelloMetadataProvider implements LifecycleInterface
     /**
      * Loader hook called once when the plugin is enabled.
      *
-     * Stashes the host container so later metadata lookups can resolve
-     * services lazily. Real providers might also open an HTTP client or
-     * warm a cache here — keep it cheap; the loader is in the request
-     * path.
+     * No-op for the reference plugin. Real plugins that need the host
+     * container should store it as a property here.
      *
      * @param ContainerInterface $container Host PSR-11 container.
      *
@@ -100,15 +89,14 @@ final class HelloMetadataProvider implements LifecycleInterface
      */
     public function onEnable(ContainerInterface $container): void
     {
-        $this->container = $container;
     }
 
     /**
      * Loader hook called once when the plugin is disabled.
      *
-     * Releases the stashed container reference. Plugins that opened
-     * clients in {@see onEnable()} should close them here so the
-     * lifecycle is symmetric.
+     * No-op for the reference plugin. Real plugins that opened resources
+     * in {@see onEnable()} should close them here so the lifecycle is
+     * symmetric.
      *
      * @return void
      *
@@ -116,7 +104,6 @@ final class HelloMetadataProvider implements LifecycleInterface
      */
     public function onDisable(): void
     {
-        $this->container = null;
     }
 
     /**
