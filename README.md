@@ -80,6 +80,10 @@ file) so you can copy it as the seed for your own plugin:
    events. See the full schema in
    [`docs/plugins/manifest.schema.json`](https://github.com/detain/phlix/blob/master/docs/plugins/manifest.schema.json)
    in the main repo.
+
+   > **Note:** If you declare a setting `required:true`, give it a `default`
+   > or the host will null-fill it — see
+   > [`docs/plugins/manifest.md`](https://github.com/detain/phlix/blob/master/docs/plugins/manifest.md).
 3. Edit **`composer.json`** — rename the package, change the PSR-4
    prefix under `autoload.psr-4`.
 4. Rewrite **`src/HelloMetadataProvider.php`** with your own
