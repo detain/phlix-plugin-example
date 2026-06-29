@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # phlix-shared requires PHP ^8.3, so the matrix matches.
         php: ['8.3', '8.4']
     steps:
       - uses: actions/checkout@v6
@@ -19,7 +18,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          coverage: none
+          coverage: pcov
           tools: composer:v2
 
       - name: Install dependencies
@@ -27,3 +26,9 @@ jobs:
 
       - name: Run PHPUnit
         run: vendor/bin/phpunit --colors=always
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse src --level=9
+
+      - name: Run PHPCS
+        run: vendor/bin/phpcs src --standard=PSR12

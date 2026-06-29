@@ -11,7 +11,9 @@
         "detain/phlix-shared": "^0.6"
     },
     "require-dev": {
-        "phpunit/phpunit": "^10.0"
+        "phpstan/phpstan": "^2.2",
+        "phpunit/phpunit": "^10.0",
+        "squizlabs/php_codesniffer": "^4.0"
     },
     "repositories": [
         { "type": "vcs", "url": "https://github.com/detain/phlix-shared.git" }
@@ -29,5 +31,9 @@
     "config": {
         "optimize-autoloader": true,
         "sort-packages": true
+    },
+    "scripts": {
+        "phpstan": "vendor/bin/phpstan analyse src --level=9",
+        "phpcs": "vendor/bin/phpcs src --standard=PSR12"
     }
 }
