@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Test bootstrap for the plugin's own PHPUnit suite.
  *
  * The plugin's runtime dependency is the Phlix server, which provides
- * `Phlix\Plugins\Contract\LifecycleInterface`. In an installed plugin
+ * `Phlix\Shared\Plugin\LifecycleInterface`. In an installed plugin
  * (`var/plugins/phlix-plugin-example/`) that interface is resolved by
  * the host application's autoloader. When the plugin is tested in
  * isolation — `composer install && vendor/bin/phpunit` from this
@@ -21,6 +21,6 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
-if (!interface_exists(\Phlix\Plugins\Contract\LifecycleInterface::class)) {
+if (!interface_exists(\Phlix\Shared\Plugin\LifecycleInterface::class)) {
     require __DIR__ . '/../dev-stubs/LifecycleInterface.php';
 }
