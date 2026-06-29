@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phlix\Plugins\Contract;
+namespace Phlix\Shared\Plugin;
 
 use Psr\Container\ContainerInterface;
 
@@ -11,8 +11,8 @@ use Psr\Container\ContainerInterface;
  *
  * Loaded by `tests/bootstrap.php` when the plugin is tested outside a
  * Phlix server checkout. Keep this file byte-compatible with the
- * canonical definition in `detain/phlix` at
- * `src/Plugins/Contract/LifecycleInterface.php`.
+ * canonical definition in `detain/phlix-shared` at
+ * `src/Plugin/LifecycleInterface.php`.
  *
  * @internal Tests only — never autoloaded into production.
  */

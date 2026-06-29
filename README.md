@@ -7,7 +7,7 @@
 
 This repo is the canonical hello-world template for Phlix plugin
 authors. It does almost nothing on purpose: it implements the
-`Phlix\Plugins\Contract\LifecycleInterface` contract introduced in
+`Phlix\Shared\Plugin\LifecycleInterface` contract introduced in
 Phlix Step A.4, returns a fixed greeting when asked about one
 well-known fixture path, and ships with a CI workflow plus PHPUnit
 tests so you can fork it as a starter and replace the lookup logic
