@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Test bootstrap for the plugin PHPUnit suite.
+ *
+ * @copyright 2026 Joe Huss <detain@interserver.net>
+ * @license   MIT
+ */
+
 declare(strict_types=1);
 
 /**
