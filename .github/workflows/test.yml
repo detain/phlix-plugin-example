@@ -27,6 +27,16 @@ jobs:
       - name: Run PHPUnit
         run: vendor/bin/phpunit --colors=always
 
+      # phpunit.xml writes a cobertura report to ./coverage.xml (pcov is enabled above).
+      # Uploaded from a single matrix leg so both PHP versions do not race on the same commit.
+      - name: Upload coverage to Codacy
+        uses: codacy/codacy-coverage-reporter-action@v1
+        continue-on-error: true
+        if: matrix.php == '8.3'
+        with:
+          api-token: ${{ secrets.CODACY_API_TOKEN }}
+          coverage-reports: ./coverage.xml
+
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse src --level=9
 
