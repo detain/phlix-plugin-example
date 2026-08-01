@@ -114,6 +114,7 @@ Scaffold a new Phlix lifecycle/metadata-provider PHP class under `src/`, byte-fo
 **User says:** "Add a new metadata provider class for TMDB lookups."
 
 **Actions taken:**
+
 1. Chose `TmdbMetadataProvider` → `src/TmdbMetadataProvider.php`; confirmed it does not exist.
 2. Wrote header with `declare(strict_types=1);`, `namespace Phlix\PluginExample;`, and the two `use` imports (`Phlix\Shared\Plugin\LifecycleInterface`, `Psr\Container\ContainerInterface`).
 3. Declared `final class TmdbMetadataProvider implements LifecycleInterface`.

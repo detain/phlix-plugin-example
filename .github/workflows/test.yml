@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Setup PHP ${{ matrix.php }}
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
         with:
           php-version: ${{ matrix.php }}
           coverage: pcov
@@ -30,7 +30,7 @@ jobs:
       # phpunit.xml writes a cobertura report to ./coverage.xml (pcov is enabled above).
       # Uploaded from a single matrix leg so both PHP versions do not race on the same commit.
       - name: Upload coverage to Codacy
-        uses: codacy/codacy-coverage-reporter-action@v1
+        uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699
         continue-on-error: true
         if: matrix.php == '8.3'
         with:

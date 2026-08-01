@@ -116,7 +116,7 @@ function collect(string $dir, array &$files, array $excludes): void
 /**
  * Best-effort one-line description derived from namespace / class name.
  */
-function inferDescription(string $file, string $relativePath): string
+function inferDescription(string $file, string $_relativePath): string
 {
     $content = file_get_contents($file);
 

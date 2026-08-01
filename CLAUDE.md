@@ -16,6 +16,8 @@ Regenerate the autoloader and lint after adding or renaming a class:
 composer dump-autoload                       # regenerate PSR-4 map after adding a class under src/
 php -l src/HelloMetadataProvider.php         # lint the entry class
 composer validate                            # check composer.json is well-formed
+composer phpstan                             # phpstan.neon level 9 over src/
+composer phpcs                               # PSR-12 check per phpcs.xml
 ```
 
 ## Architecture
@@ -23,9 +25,9 @@ composer validate                            # check composer.json is well-forme
 - **Entry**: `src/HelloMetadataProvider.php` — implements `Phlix\Shared\Plugin\LifecycleInterface`; `lookup()` returns `['title' => $greeting]` for `FIXTURE_PATH`, else `[]`.
 - **Manifest**: `plugin.json` — `entry` FQCN, `settings.greeting` (default `"Hello, World"`), `events: []`, `phlix_min_server_version`.
 - **Package**: `composer.json` — PSR-4 `Phlix\PluginExample\` → `src/`, `Phlix\PluginExample\Tests\` → `tests/`.
-- **Tests**: `tests/HelloMetadataProviderTest.php`; bootstrap `tests/bootstrap.php` autoloads then loads the stub fallback.
+- **Tests**: `tests/HelloMetadataProviderTest.php` — 8 tests covering `lookup()`, `subscribedEvents()`, and the `onEnable()`/`onDisable()` no-ops; bootstrap `tests/bootstrap.php` autoloads then loads the stub fallback.
 - **Stub**: `dev-stubs/LifecycleInterface.php` — used only when `detain/phlix-shared` is not installed.
-- **Config**: `phpunit.xml` (bootstrap + `src` coverage). **CI**: `.github/workflows/test.yml` runs install + phpunit on push.
+- **Config**: `phpunit.xml` (bootstrap + `src` coverage, cobertura report), `phpstan.neon` (level 9), `phpcs.xml` (PSR-12 declared as `<rule ref="PSR12"/>` — PHPCS 4.x uses `ref`, not `name`). **CI**: `.github/workflows/test.yml` runs install + phpunit + PHPStan + PHPCS on push to `master`/`main` and on PRs, uploading coverage to Codacy from the `8.3` matrix leg only.
 
 ## Conventions
 
@@ -47,7 +49,7 @@ Branch off `main`, one concern per PR:
 git checkout main && git pull && git checkout -b feature/<concern>
 ```
 
-- No project-specific MCP servers needed; the GitHub MCP (if enabled) covers PRs for `git@github.com:detain/phlix-plugin-example.git`.
+- No project-specific MCP servers needed; the GitHub MCP (if enabled) covers PRs for `https://github.com/detain/phlix-plugin-example.git`.
 - Caliber skills under `.claude/skills/` (`find-skills`, `save-learning`, `setup-caliber`) keep agent configs synced.
 
 <!-- caliber:managed:pre-commit -->
@@ -63,7 +65,7 @@ grep -q "caliber" .git/hooks/pre-commit 2>/dev/null && echo "hook-active" || ech
 - If **hook-active**: the hook handles sync automatically — just commit normally. Tell the user: "Caliber will sync your agent configs automatically via the pre-commit hook."
 - If **no-hook**: run Caliber manually before committing:
   1. Tell the user: "Caliber: Syncing agent configs with your latest changes..."
-  2. Run: `caliber refresh && git add CALIBER_LEARNINGS.md CLAUDE.md .claude/ .opencode/ 2>/dev/null`
+  2. Run: `caliber refresh && git add CLAUDE.md .claude/ .opencode/ 2>/dev/null`
   3. After it completes, briefly tell the user what Caliber updated. Then proceed with the commit.
 
 **Valid `caliber refresh` options:** `--quiet` (suppress output) and `--dry-run` (preview without writing). Do not pass any other flags — options like `--auto-approve`, `--debug`, or `--force` do not exist and will cause errors.
@@ -76,7 +78,7 @@ If `caliber` is not found, tell the user: "This project uses Caliber for agent c
 <!-- caliber:managed:learnings -->
 ## Session Learnings
 
-Read `CALIBER_LEARNINGS.md` for patterns and anti-patterns learned from previous sessions.
+Read project learnings for patterns and anti-patterns from previous sessions.
 These are auto-extracted from real tool usage — treat them as project-specific rules.
 <!-- /caliber:managed:learnings -->
 
