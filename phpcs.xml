@@ -3,5 +3,5 @@
     <description>PSR-12 coding standard for phlix-plugin-example</description>
     <file>src</file>
     <exclude-pattern>vendor/</exclude-pattern>
-    <rule name="PSR12"/>
+    <rule ref="PSR12"/>
 </ruleset>
