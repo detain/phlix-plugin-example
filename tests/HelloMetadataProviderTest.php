@@ -101,4 +101,58 @@ final class HelloMetadataProviderTest extends TestCase
 
         $this->assertNull($returnValue);
     }
+
+    public function test_lookup_with_similar_path_returns_empty(): void
+    {
+        $provider = new HelloMetadataProvider();
+
+        // Paths that are similar but not exact matches
+        $this->assertSame([], $provider->lookup('/test/hello.mkv1'));
+        $this->assertSame([], $provider->lookup('/test/hello.mk'));
+        $this->assertSame([], $provider->lookup('/test/hello.mkv '));
+        $this->assertSame([], $provider->lookup(' /test/hello.mkv'));
+        $this->assertSame([], $provider->lookup('/test/hello'));
+    }
+
+    public function test_lookup_with_empty_string_returns_empty(): void
+    {
+        $provider = new HelloMetadataProvider();
+
+        $this->assertSame([], $provider->lookup(''));
+    }
+
+    public function test_lookup_is_case_sensitive(): void
+    {
+        $provider = new HelloMetadataProvider();
+
+        // Exact case match should work
+        $this->assertSame(['title' => 'Hello, World'], $provider->lookup('/test/hello.mkv'));
+        // Different case should not match
+        $this->assertSame([], $provider->lookup('/TEST/HELLO.MKV'));
+        $this->assertSame([], $provider->lookup('/Test/Hello.mkv'));
+    }
+
+    public function test_fixture_path_constant_has_expected_value(): void
+    {
+        $this->assertSame('/test/hello.mkv', HelloMetadataProvider::FIXTURE_PATH);
+    }
+
+    public function test_lookup_with_root_path_does_not_match(): void
+    {
+        $provider = new HelloMetadataProvider();
+
+        // The fixture path is specifically /test/hello.mkv
+        // Root level paths should not match
+        $this->assertSame([], $provider->lookup('/hello.mkv'));
+        $this->assertSame([], $provider->lookup('/test'));
+    }
+
+    public function test_lookup_with_null_bytes_in_path_returns_empty(): void
+    {
+        $provider = new HelloMetadataProvider();
+
+        // Null bytes in path should result in no match
+        $this->assertSame([], $provider->lookup("/test/hello.mkv\0"));
+        $this->assertSame([], $provider->lookup("\0/test/hello.mkv"));
+    }
 }
