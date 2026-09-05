@@ -18,24 +18,28 @@ php -l src/HelloMetadataProvider.php         # lint the entry class
 composer validate                            # check composer.json is well-formed
 composer phpstan                             # phpstan.neon level 9 over src/
 composer phpcs                               # PSR-12 check per phpcs.xml
+php scripts/security-audit-check.php         # security gate: audit the whole lock (require + require-dev)
+php scripts/add-headers.php                  # idempotent @copyright/@license header insertion
 ```
 
 ## Architecture
 
 - **Entry**: `src/HelloMetadataProvider.php` — implements `Phlix\Shared\Plugin\LifecycleInterface`; `lookup()` returns `['title' => $greeting]` for `FIXTURE_PATH`, else `[]`.
-- **Manifest**: `plugin.json` — `entry` FQCN, `settings.greeting` (default `"Hello, World"`), `events: []`, `phlix_min_server_version`.
+- **Manifest**: `plugin.json` — `entry` FQCN, `settings.greeting` (default `"Hello, World"`), `events: []`, `phlix_min_server_version`; `version` is `0.1.1`.
 - **Package**: `composer.json` — PSR-4 `Phlix\PluginExample\` → `src/`, `Phlix\PluginExample\Tests\` → `tests/`.
-- **Tests**: `tests/HelloMetadataProviderTest.php` — 8 tests covering `lookup()`, `subscribedEvents()`, and the `onEnable()`/`onDisable()` no-ops; bootstrap `tests/bootstrap.php` autoloads then loads the stub fallback.
+- **Tests**: `tests/HelloMetadataProviderTest.php` — 14 tests covering `lookup()`, `subscribedEvents()`, and the `onEnable()`/`onDisable()` no-ops; `tests/SecurityAuditCheckTest.php` — 26 guard tests that execute `scripts/security-audit-check.php` and parse `.github/workflows/test.yml`; bootstrap `tests/bootstrap.php` autoloads then loads the stub fallback.
 - **Stub**: `dev-stubs/LifecycleInterface.php` — used only when `detain/phlix-shared` is not installed.
-- **Config**: `phpunit.xml` (bootstrap + `src` coverage, cobertura report), `phpstan.neon` (level 9), `phpcs.xml` (PSR-12 declared as `<rule ref="PSR12"/>` — PHPCS 4.x uses `ref`, not `name`). **CI**: `.github/workflows/test.yml` runs install + phpunit + PHPStan + PHPCS on push to `master`/`main` and on PRs, uploading coverage to Codacy from the `8.3` matrix leg only.
+- **Scripts**: `scripts/security-audit-check.php` — runs `composer audit --locked --format=json` over the whole lock, labels each finding `[require]`/`[require-dev]`, blocks on any advisory, and floors the corpus (`MIN_AUDITED_PACKAGES` 28, `MIN_AUDITED_DEV_PACKAGES` 24); `scripts/add-headers.php` — inserts the `@copyright`/`@license` file docblock.
+- **Config**: `phpunit.xml` (bootstrap + `src` coverage, cobertura report), `phpstan.neon` (level 9), `phpcs.xml` (PSR-12 declared as `<rule ref="PSR12"/>` — PHPCS 4.x uses `ref`, not `name`). **CI**: `.github/workflows/test.yml` runs install + phpunit + PHPStan + PHPCS on push to `master`/`main` and on PRs, uploading coverage to Codacy from the `8.3` matrix leg only, then a final `composer-audit` job running `php scripts/security-audit-check.php`.
 
 ## Conventions
 
-- `declare(strict_types=1);` at top of every `.php` file; `final` classes; constructor injection.
+- `declare(strict_types=1);` at top of every `.php` file, below a `@copyright`/`@license` docblock; `final` classes; constructor injection.
 - Namespace `Phlix\PluginExample\`, one class per file under `src/`.
 - Lifecycle: `onEnable(ContainerInterface)`, `onDisable()`, `subscribedEvents(): array` — keep `onEnable()` cheap, do work in listeners.
 - Reference fixtures via `HelloMetadataProvider::FIXTURE_PATH`, never a hardcoded path.
 - Plugin `name` must start with `phlix-plugin-`; bump `version` in `plugin.json`.
+- Never add `--no-dev`, `continue-on-error`, or an `if:` condition to the `composer-audit` job, and keep it last in `.github/workflows/test.yml` — `tests/SecurityAuditCheckTest.php` fails on each.
 
 ## Known drift
 

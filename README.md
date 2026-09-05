@@ -69,8 +69,8 @@ to reference it from tests.
 
 ## Fork as a starter
 
-This repository is intentionally small (one PHP class, one test
-file) so you can copy it as the seed for your own plugin:
+This repository is intentionally small (one PHP class, one plugin
+test file) so you can copy it as the seed for your own plugin:
 
 1. **Fork** or `git clone` this repo, then rename the new directory.
 2. Edit **`plugin.json`** — pick a new `name` (must start with
@@ -108,6 +108,7 @@ alias table:
 ```bash
 composer install
 vendor/bin/phpunit
+php scripts/security-audit-check.php   # same security gate CI runs
 ```
 
 ## License

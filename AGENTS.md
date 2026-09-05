@@ -13,24 +13,27 @@ vendor/bin/phpunit --filter test_subscribed_events_is_empty
 ```bash
 composer phpstan          # vendor/bin/phpstan analyse src --level=9 (phpstan.neon)
 composer phpcs            # vendor/bin/phpcs src --standard=PSR12 (phpcs.xml)
+php scripts/security-audit-check.php   # security gate: audits the whole lock (require + require-dev)
 ```
 
 ## Architecture
 
 - **Entry**: `src/HelloMetadataProvider.php` — implements `Phlix\Shared\Plugin\LifecycleInterface`; `lookup()` returns `['title' => $greeting]` for `FIXTURE_PATH`, else `[]`.
-- **Manifest**: `plugin.json` — `entry`, `settings.greeting` (default `"Hello, World"`), `events: []`.
+- **Manifest**: `plugin.json` — `entry`, `settings.greeting` (default `"Hello, World"`), `events: []`, `version` `0.1.1`.
 - **Package**: `composer.json` — PSR-4 `Phlix\PluginExample\` → `src/`, tests → `tests/`.
-- **Tests**: `tests/HelloMetadataProviderTest.php` (8 tests: `lookup()`, `subscribedEvents()`, and the `onEnable()`/`onDisable()` no-ops), bootstrap `tests/bootstrap.php`; config `phpunit.xml`.
+- **Tests**: `tests/HelloMetadataProviderTest.php` (14 tests: `lookup()`, `subscribedEvents()`, and the `onEnable()`/`onDisable()` no-ops), `tests/SecurityAuditCheckTest.php` (26 guard tests that execute `scripts/security-audit-check.php` and parse `.github/workflows/test.yml`), bootstrap `tests/bootstrap.php`; config `phpunit.xml`.
 - **Stub**: `dev-stubs/LifecycleInterface.php` — fallback only when `detain/phlix-shared` is absent.
+- **Scripts**: `scripts/security-audit-check.php` — `composer audit --locked --format=json` over the whole lock, findings labelled `[require]`/`[require-dev]`, blocking on advisories, corpus floored at `MIN_AUDITED_PACKAGES` 28 / `MIN_AUDITED_DEV_PACKAGES` 24; `scripts/add-headers.php` — idempotent `@copyright`/`@license` header insertion.
 - **Lint config**: `phpstan.neon` (level 9 over `src`), `phpcs.xml` (PSR-12 declared as `<rule ref="PSR12"/>` — PHPCS 4.x uses `ref`, not `name`).
-- **CI**: `.github/workflows/test.yml` runs install + phpunit + PHPStan + PHPCS on push to `master`/`main` and on PRs, and uploads the phpunit cobertura coverage report to Codacy from the `8.3` matrix leg only.
+- **CI**: `.github/workflows/test.yml` runs install + phpunit + PHPStan + PHPCS on push to `master`/`main` and on PRs, and uploads the phpunit cobertura coverage report to Codacy from the `8.3` matrix leg only; a final `composer-audit` job runs `php scripts/security-audit-check.php`.
 
 ## Conventions
 
-- `declare(strict_types=1);` everywhere; `final` classes; constructor injection (`__construct(string $greeting)`).
+- `declare(strict_types=1);` everywhere, below a `@copyright`/`@license` docblock; `final` classes; constructor injection (`__construct(string $greeting)`).
 - Namespace `Phlix\PluginExample\`; lifecycle `onEnable(ContainerInterface)` / `onDisable()` / `subscribedEvents(): array` — keep `onEnable()` cheap.
 - Use `HelloMetadataProvider::FIXTURE_PATH` in tests; assert with `assertSame()`; mock the container with `createMock(ContainerInterface::class)` for `onEnable()`.
 - Plugin `name` must start with `phlix-plugin-`.
+- Never add `--no-dev`, `continue-on-error`, or an `if:` condition to the `composer-audit` job, and keep it last in `.github/workflows/test.yml` — `tests/SecurityAuditCheckTest.php` fails on each.
 
 ## Known drift
 
