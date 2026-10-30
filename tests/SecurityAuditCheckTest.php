@@ -17,6 +17,8 @@ use PHPUnit\Framework\TestCase;
 /**
  * S246 — behaviour of `scripts/security-audit-check.php`, by execution.
  *
+ * Lane token: S440EXAMPLEGUARDW3Q5.
+ *
  * ## The defect these tests pin shut
  *
  * This repository had **no security audit gate at all**: nothing in CI ever
@@ -61,6 +63,19 @@ use PHPUnit\Framework\TestCase;
  *     inline argv would leave the constant, and every assertion reading it,
  *     intact while auditing a different command (C2-review hole H2).
  *
+ * ## Lineage port (example minors campaign, W-min39)
+ *
+ * The eight-plugin guard family carries two parity markers this flagship's
+ * suite lacked: a self-asserted lane token
+ * ({@see testThisIsTheS440GateSuite()}) — real code, so it survives
+ * tokenisation and stays greppable — and a committed-lock assertion
+ * ({@see testTheCommittedLockExists()}). This repository is the template the
+ * other plugins copy, and without the lock assertion a fork that git-ignored
+ * its lock (the contradiction the W-min38 batch removed from `.gitignore`)
+ * would leave the `composer audit --locked` gate measuring nothing while
+ * every guard stayed green. Ported from the family reference, paths adapted
+ * to this repository's flat `tests/` layout.
+ *
  * @internal
  */
 final class SecurityAuditCheckTest extends TestCase
@@ -70,6 +85,9 @@ final class SecurityAuditCheckTest extends TestCase
     private const WORKFLOW = __DIR__ . '/../.github/workflows/test.yml';
 
     private const REAL_LOCK = __DIR__ . '/../composer.lock';
+
+    /** S440 parity-port lane marker — a real code string, self-asserted by {@see testThisIsTheS440GateSuite()}, so it survives tokenisation and stays greppable. */
+    private const LANE_TOKEN = 'S440EXAMPLEGUARDW3Q5';
 
     /**
      * Floors the script enforces, restated here deliberately.
@@ -120,6 +138,23 @@ final class SecurityAuditCheckTest extends TestCase
     public function testTheGateScriptExists(): void
     {
         self::assertFileExists(self::SCRIPT);
+    }
+
+    /**
+     * S440 lane marker: the guard suite belongs to the S440 parity port, and the
+     * token is real code (a string constant) so it survives tokenisation rather
+     * than living only in a comment that php_strip_whitespace would erase.
+     */
+    public function testThisIsTheS440GateSuite(): void
+    {
+        self::assertSame('S440EXAMPLEGUARDW3Q5', self::LANE_TOKEN);
+    }
+
+    public function testTheCommittedLockExists(): void
+    {
+        // S440: parity requires a COMMITTED lock of the codeload-tarball deps.
+        // Without it the gate measures nothing and the audit job cannot run.
+        self::assertFileExists(self::REAL_LOCK);
     }
 
     public function testTheWorkflowRunsTheGateScript(): void

@@ -20,10 +20,11 @@ declare(strict_types=1);
  * repo — the host isn't on the classpath, so we declare a minimal stub
  * here that matches the published shape.
  *
- * The stub is only registered when the real interface is absent, so
- * downstream integration tests (e.g. the server-side
- * `SamplePluginSmokeTest` in `detain/phlix`) still resolve the real
- * contract.
+ * The stub is registered only when the real interface is absent: when the
+ * host application (or `detain/phlix-shared` through Composer) provides
+ * `Phlix\Shared\Plugin\LifecycleInterface`, this file defers to it and the
+ * suite exercises the genuine published contract. The stub exists purely so
+ * a bare checkout of this repository can run its own tests.
  */
 
 require __DIR__ . '/../vendor/autoload.php';

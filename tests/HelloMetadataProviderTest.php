@@ -18,10 +18,10 @@ use Psr\Container\ContainerInterface;
 /**
  * Smoke tests for the reference {@see HelloMetadataProvider} plugin.
  *
- * Mirrors the behavioural contract that the server-side
- * `SamplePluginSmokeTest` (in `detain/phlix`) asserts at the
- * integration boundary so the plugin can be developed in isolation
- * before it is published.
+ * Exercises the plugin's own contract in isolation — lookup results,
+ * empty event bindings, lifecycle no-ops — so the template can be verified
+ * with `composer install && vendor/bin/phpunit`, with or without the host
+ * application on the classpath.
  */
 final class HelloMetadataProviderTest extends TestCase
 {
@@ -56,29 +56,6 @@ final class HelloMetadataProviderTest extends TestCase
         $provider = new HelloMetadataProvider();
 
         $this->assertSame([], $provider->subscribedEvents());
-    }
-
-    public function test_on_enable_does_not_throw(): void
-    {
-        $provider = new HelloMetadataProvider();
-        $container = $this->createMock(ContainerInterface::class);
-
-        // onEnable is a no-op - it should not throw any exception
-        $provider->onEnable($container);
-
-        // If we reach here, the test passed (no exception thrown)
-        $this->assertTrue(true);
-    }
-
-    public function test_on_disable_does_not_throw(): void
-    {
-        $provider = new HelloMetadataProvider();
-
-        // onDisable is a no-op - it should not throw any exception
-        $provider->onDisable();
-
-        // If we reach here, the test passed (no exception thrown)
-        $this->assertTrue(true);
     }
 
     public function test_on_enable_accepts_container_and_returns_void(): void

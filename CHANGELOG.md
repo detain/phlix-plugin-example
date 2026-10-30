@@ -107,6 +107,35 @@ law — aliases are validation metadata, `subscribedEvents()` binds
 - `AGENTS.md`/`CLAUDE.md` command-truth lines re-aimed at the
   config-driven invocations they now describe.
 
+### Fixed — W-min39 minors batch (example minors campaign)
+
+- `tests/SecurityAuditCheckTest.php` (M-EXAMPLE-12): the plugin-lineage
+  parity trio landed — a `LANE_TOKEN` string constant
+  (`S440EXAMPLEGUARDW3Q5`), `testThisIsTheS440GateSuite()`
+  (self-asserting, real code so it survives tokenisation and stays
+  greppable), and `testTheCommittedLockExists()` (asserts the committed
+  `composer.lock`: a fork that git-ignored its lock would otherwise
+  leave `composer audit --locked` measuring nothing while every other
+  guard stayed green), plus the header lane-token line and lineage-port
+  story. The guard suite goes 28 → 30 tests — the flagship previously
+  taught the family posture it did not itself demonstrate.
+- Ghost references removed (M-EXAMPLE-13): `tests/bootstrap.php` and
+  `tests/HelloMetadataProviderTest.php` cited a server-side
+  `SamplePluginSmokeTest` in `detain/phlix` that exists nowhere in the
+  estate. Both docblocks now state the actual law: the dev-stub
+  registers only when the real `Phlix\Shared\Plugin\LifecycleInterface`
+  is absent, so a bare checkout self-verifies with or without the host
+  application on the classpath.
+- Tautological tests deleted (M-EXAMPLE-14):
+  `test_on_enable_does_not_throw` / `test_on_disable_does_not_throw`
+  ended in `assertTrue(true)`; the surviving void-return counterparts
+  (`test_on_enable_accepts_container_and_returns_void`,
+  `test_on_disable_returns_void`) strictly dominate them — any throw
+  already fails those tests and they additionally assert the void
+  return. Provider suite 14 → 12 tests. `AGENTS.md`/`CLAUDE.md` count
+  pins re-truthed to the measured 30 guard / 12 provider in the same
+  commit (suite: 42 tests, 153 assertions, previously 42/151).
+
 ## Unreleased — 2026-10-29
 
 ### Changed — docs(readme): make the install/usage recipe actually work
