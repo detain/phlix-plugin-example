@@ -1,6 +1,6 @@
 # phlix-plugin-example
 
-Reference **metadata-provider** plugin for [Phlix](https://github.com/detain/phlix) — one `final` PHP class exercising the plugin lifecycle contract. PHPUnit `^10`, depends on `detain/phlix-shared ^0.6`.
+Reference **metadata-provider** plugin for [Phlix](https://github.com/detain/phlix-server) — one `final` PHP class exercising the plugin lifecycle contract. PHPUnit `^10`, depends on `detain/phlix-shared ^0.21.0`.
 
 ## Commands
 
@@ -17,7 +17,7 @@ composer dump-autoload                       # regenerate PSR-4 map after adding
 php -l src/HelloMetadataProvider.php         # lint the entry class
 composer validate                            # check composer.json is well-formed
 composer phpstan                             # phpstan.neon level 9 over src/
-composer phpcs                               # PSR-12 check per phpcs.xml
+composer phpcs                               # vendor/bin/phpcs src --standard=PSR12 (PSR-12 only; phpcs.xml is not consulted by this command)
 php scripts/security-audit-check.php         # security gate: audit the whole lock (require + require-dev)
 php scripts/add-headers.php                  # idempotent @copyright/@license header insertion
 ```
@@ -27,7 +27,7 @@ php scripts/add-headers.php                  # idempotent @copyright/@license he
 - **Entry**: `src/HelloMetadataProvider.php` — implements `Phlix\Shared\Plugin\LifecycleInterface`; `lookup()` returns `['title' => $greeting]` for `FIXTURE_PATH`, else `[]`.
 - **Manifest**: `plugin.json` — `entry` FQCN, `settings.greeting` (default `"Hello, World"`), `events: []`, `phlix_min_server_version`; `version` is `0.1.1`.
 - **Package**: `composer.json` — PSR-4 `Phlix\PluginExample\` → `src/`, `Phlix\PluginExample\Tests\` → `tests/`.
-- **Tests**: `tests/HelloMetadataProviderTest.php` — 14 tests covering `lookup()`, `subscribedEvents()`, and the `onEnable()`/`onDisable()` no-ops; `tests/SecurityAuditCheckTest.php` — 26 guard tests that execute `scripts/security-audit-check.php` and parse `.github/workflows/test.yml`; bootstrap `tests/bootstrap.php` autoloads then loads the stub fallback.
+- **Tests**: `tests/HelloMetadataProviderTest.php` — 14 tests covering `lookup()`, `subscribedEvents()`, and the `onEnable()`/`onDisable()` no-ops; `tests/SecurityAuditCheckTest.php` — 28 guard tests that execute `scripts/security-audit-check.php` and parse `.github/workflows/test.yml`; bootstrap `tests/bootstrap.php` autoloads then loads the stub fallback.
 - **Stub**: `dev-stubs/LifecycleInterface.php` — used only when `detain/phlix-shared` is not installed.
 - **Scripts**: `scripts/security-audit-check.php` — runs `composer audit --locked --format=json` over the whole lock, labels each finding `[require]`/`[require-dev]`, blocks on any advisory, and floors the corpus (`MIN_AUDITED_PACKAGES` 28, `MIN_AUDITED_DEV_PACKAGES` 24); `scripts/add-headers.php` — inserts the `@copyright`/`@license` file docblock.
 - **Config**: `phpunit.xml` (bootstrap + `src` coverage, cobertura report), `phpstan.neon` (level 9), `phpcs.xml` (PSR-12 declared as `<rule ref="PSR12"/>` — PHPCS 4.x uses `ref`, not `name`). **CI**: `.github/workflows/test.yml` runs install + phpunit + PHPStan + PHPCS on push to `master`/`main` and on PRs, uploading coverage to Codacy from the `8.3` matrix leg only, then a final `composer-audit` job running `php scripts/security-audit-check.php`.
@@ -43,14 +43,14 @@ php scripts/add-headers.php                  # idempotent @copyright/@license he
 
 ## Known drift
 
-- `dev-stubs/LifecycleInterface.php` and `tests/bootstrap.php` use the legacy namespace `Phlix\Plugins\Contract\LifecycleInterface`; the live class uses `Phlix\Shared\Plugin\LifecycleInterface`. `README.md` also cites the old name. Keep the stub aligned if you edit the contract.
+- None open. The historical legacy-namespace drift (`Phlix\Plugins\Contract\LifecycleInterface`) was retired in `355c445`: `dev-stubs/LifecycleInterface.php` and `tests/bootstrap.php` use the live `Phlix\Shared\Plugin\LifecycleInterface`, as does the README. Keep the dev stub byte-compatible with the canonical `detain/phlix-shared` `src/Plugin/LifecycleInterface.php` if you edit the contract.
 
 ## Git & tooling
 
-Branch off `main`, one concern per PR:
+Branch off `master`, one concern per PR:
 
 ```bash
-git checkout main && git pull && git checkout -b feature/<concern>
+git checkout master && git pull && git checkout -b feature/<concern>
 ```
 
 - No project-specific MCP servers needed; the GitHub MCP (if enabled) covers PRs for `https://github.com/detain/phlix-plugin-example.git`.

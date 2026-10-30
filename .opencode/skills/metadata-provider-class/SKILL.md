@@ -9,7 +9,7 @@ Scaffold a new Phlix lifecycle/metadata-provider PHP class under `src/`, byte-fo
 
 ## Critical
 
-- **Live contract namespace is `Phlix\Shared\Plugin\LifecycleInterface`** (from `detain/phlix-shared ^0.6`). The runtime class MUST import and implement this exact FQCN. Do NOT use the legacy `Phlix\Plugins\Contract\LifecycleInterface` in `src/` — that name appears only in `tests/bootstrap.php` and `dev-stubs/LifecycleInterface.php` and is known drift.
+- **Live contract namespace is `Phlix\Shared\Plugin\LifecycleInterface`** (from `detain/phlix-shared ^0.21.0`). The runtime class MUST import and implement this exact FQCN. The legacy `Phlix\Plugins\Contract\LifecycleInterface` name was fully retired in `355c445` — no reference to it remains in this tree (`tests/bootstrap.php` and `dev-stubs/LifecycleInterface.php` use the live namespace) — do not introduce it.
 - **Every `.php` file under `src/` starts with `<?php`, a blank line, then `declare(strict_types=1);`** — no exceptions.
 - **Namespace is `Phlix\PluginExample\`** (PSR-4 → `src/`, per `composer.json`). One `final class` per file; the file name MUST equal the class name (e.g. `class TmdbMetadataProvider` → `src/TmdbMetadataProvider.php`).
 - **`onEnable()` must stay cheap** — only stash the container. Do real work in `lookup()` or event listeners, never in `onEnable()`.
@@ -126,12 +126,12 @@ Scaffold a new Phlix lifecycle/metadata-provider PHP class under `src/`, byte-fo
 
 ## Common Issues
 
-- **`PHP Fatal error: Interface "Phlix\Shared\Plugin\LifecycleInterface" not found`** — `detain/phlix-shared` is not installed. Fix: `composer install` (it is pulled from the VCS repo declared in `composer.json` `repositories`). Confirm with `ls vendor/detain/phlix-shared`. Do NOT "fix" this by switching the `src/` import to the legacy `Phlix\Plugins\Contract\LifecycleInterface` — that stub is for tests only.
+- **`PHP Fatal error: Interface "Phlix\Shared\Plugin\LifecycleInterface" not found`** — `detain/phlix-shared` is not installed. Fix: `composer install` (it is pulled from the VCS repo declared in `composer.json` `repositories`). Confirm with `ls vendor/detain/phlix-shared`. Do NOT "fix" this by importing a legacy `Phlix\Plugins\Contract\LifecycleInterface` — that name exists nowhere in this tree; the error simply means the package is missing.
 
 - **`Class "Phlix\PluginExample\<ClassName>" not found` at runtime** — the autoloader classmap is stale or the file name does not match the class name. Fix: ensure `src/<ClassName>.php` matches `class <ClassName>` exactly (case-sensitive), then run `composer dump-autoload`.
 
 - **`Declaration of <ClassName>::subscribedEvents() must be compatible with LifecycleInterface`** — your return type or signature drifted. The three methods must be exactly `onEnable(ContainerInterface $container): void`, `onDisable(): void`, `subscribedEvents(): array`. Cross-check against `dev-stubs/LifecycleInterface.php`.
 
-- **PHPUnit can't find the class but production can (or vice-versa)** — `tests/bootstrap.php` only registers the dev stub when `Phlix\Plugins\Contract\LifecycleInterface` is absent, and that legacy namespace differs from the live `Phlix\Shared\Plugin\LifecycleInterface`. If you change the contract, keep `dev-stubs/LifecycleInterface.php` and `tests/bootstrap.php` aligned (known drift documented in CLAUDE.md).
+- **PHPUnit can't find the class but production can (or vice-versa)** — `tests/bootstrap.php` registers the dev stub only when the live `Phlix\Shared\Plugin\LifecycleInterface` is absent, and the stub declares that same live FQCN, so isolated tests resolve the contract even without `detain/phlix-shared` installed. If you change the contract, keep `dev-stubs/LifecycleInterface.php` byte-compatible with `detain/phlix-shared` and update `tests/bootstrap.php` in the same commit.
 
 - **`strict_types` TypeError on `lookup()`** — a caller passed a non-string `$filePath`. Keep the `string $filePath` type hint; callers in the Phlix host always pass an absolute path string. Do not loosen the hint to `mixed`.

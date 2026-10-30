@@ -31,6 +31,39 @@ no re-fix dispatched): fork step 2 now enumerates
 law — aliases are validation metadata, `subscribedEvents()` binds
 (M-EXAMPLE-10).
 
+### Fixed — W-min37 minors batch (example minors campaign)
+
+- `composer.json`: `psr/container` narrowed `^1.1 || ^2.0` → `^2.0`.
+  The `^1.1` arm was dead weight — `detain/phlix-shared` itself
+  requires `^2.0`, so the lock could only ever resolve 2.x — and the
+  template's job is to teach the honest constraint (M-EXAMPLE-05,
+  composer half; the README file-count/event-family halves were
+  already cured at `99906be1`). `composer.lock` re-hashed only
+  (`composer update` segfaults in this host's venue, so the new
+  content-hash was computed by `Composer\Package\Locker::`
+  `getContentHash()` — the tool's own function, oracle-verified against
+  the committed pair before applying; `composer validate --strict`
+  passes and CI `composer install` resolves the identical tree).
+- `.github/workflows/test.yml`: `actions/checkout@v6` (×2) pinned to
+  commit `d23441a48e516b6c34aea4fa41551a30e30af803` — the estate
+  canonical for checkout v6.1.0, the same SHA the ubuntu-26.04
+  migration recorded — so the workflow teaches ONE consistent
+  action-pinning posture instead of mixing SHA-pinned `setup-php`/
+  `codacy` with a floating major tag (M-EXAMPLE-07).
+- Tracked teaching docs (`AGENTS.md`, `CLAUDE.md`,
+  `.opencode/skills/metadata-provider-class/SKILL.md`) brought
+  current against the tree they describe (M-EXAMPLE-09/11): dead
+  `detain/phlix` product link → `detain/phlix-server`;
+  `detain/phlix-shared ^0.6` → `^0.21.0` (matching `composer.json`);
+  guard suite stated at its measured 28 tests; the "Known drift"
+  sections rewritten — the legacy-namespace drift they assert was
+  retired at `355c445` (stub, bootstrap and README all carry the live
+  `Phlix\Shared\Plugin\LifecycleInterface`), so the
+  drift-documentation was itself the drift; the SKILL bootstrap claim
+  inverted the same way is corrected; `Branch off main` → `master`
+  (the repo has no `main` branch); CLAUDE.md's "phpcs per phpcs.xml"
+  comment corrected to what the command actually runs.
+
 ## Unreleased — 2026-10-29
 
 ### Changed — docs(readme): make the install/usage recipe actually work
