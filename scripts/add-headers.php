@@ -89,24 +89,34 @@ function getPHPFiles(string $repoRoot): array
     return $files;
 }
 
+/**
+ * Collect .php files under $dir, pruning directories in $excludes.
+ *
+ * @param list<string> $files    Sink: absolute file paths are appended.
+ * @param list<string> $excludes Directory basenames that are never descended.
+ *
+ * @return void
+ */
 function collect(string $dir, array &$files, array $excludes): void
 {
-    $iterator = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
-        RecursiveIteratorIterator::SELF_FIRST
+    $directory = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
+
+    // RecursiveCallbackFilterIterator is the only SPL idiom that actually
+    // prunes traversal: returning false for a directory stops the iterator
+    // descending into it. (The previous code called setFlags(CATCH_GET_CHILD)
+    // on a directory match — that flag only swallows child-iteration
+    // exceptions, it does not prune, and `continue` on the directory node
+    // does not stop SELF_FIRST recursion either. Fake guard, removed.)
+    $pruned = new RecursiveCallbackFilterIterator(
+        $directory,
+        static function (\SplFileInfo $node) use ($excludes): bool {
+            return ! ($node->isDir() && in_array($node->getBasename(), $excludes, true));
+        }
     );
 
-    foreach ($iterator as $node) {
-        if ($node->isDir()) {
-            $basename = $node->getBasename();
-            if (in_array($basename, $excludes, true)) {
-                $iterator->setFlags(RecursiveIteratorIterator::CATCH_GET_CHILD);
-            }
-            if (in_array($basename, $excludes, true)) {
-                continue;
-            }
-        }
+    $iterator = new RecursiveIteratorIterator($pruned, RecursiveIteratorIterator::SELF_FIRST);
 
+    foreach ($iterator as $node) {
         if ($node->isFile() && $node->getExtension() === 'php') {
             $files[] = $node->getPathname();
         }

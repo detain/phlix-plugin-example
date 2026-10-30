@@ -18,8 +18,9 @@ use Psr\Container\ContainerInterface;
  * Reference metadata-provider plugin for Phlix.
  *
  * Demonstrates the smallest functional plugin that satisfies the Phlix
- * plugin contract introduced in Step A.4 of `PHLIX_EXPANSION_PLAN.md`.
- * The plugin implements {@see LifecycleInterface} so the
+ * plugin contract, `Phlix\Shared\Plugin\LifecycleInterface`, published in
+ * `detain/phlix-shared`.
+ * Because the plugin implements {@see LifecycleInterface}, the
  * `Phlix\Shared\Plugin\Loader` can instantiate, enable, and disable it,
  * and exposes a {@see self::lookup()} method that returns a fixed
  * greeting for a well-known fixture path. The greeting itself is
@@ -29,15 +30,15 @@ use Psr\Container\ContainerInterface;
  * progressively replace {@see lookup()} with real metadata lookups
  * against TMDB, TVDB, Fanart.tv, or any other source.
  *
-     * ## Lifecycle notes
-     *
-     * - {@see onEnable()} is a no-op for the reference plugin; it accepts
-     *   the host container to satisfy the contract but does not retain it.
-     *   Real plugins that need a container should store it as a property.
-     * - {@see subscribedEvents()} returns an empty array; this plugin does
-     *   not listen for PSR-14 events. A real metadata provider can leave
-     *   this empty too — Phase A's `MetadataManager` invokes providers
-     *   directly rather than via the dispatcher.
+ * ## Lifecycle notes
+ *
+ * - {@see onEnable()} is a no-op for the reference plugin; it accepts
+ *   the host container to satisfy the contract but does not retain it.
+ *   Real plugins that need a container should store it as a property.
+ * - {@see subscribedEvents()} returns an empty array; this plugin does
+ *   not listen for PSR-14 events. A real metadata provider can leave
+ *   this empty too — Phase A's `MetadataManager` invokes providers
+ *   directly rather than via the dispatcher.
  *
  * ## Provenance
  *

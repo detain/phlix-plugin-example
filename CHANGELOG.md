@@ -4,6 +4,33 @@ All notable changes to `phlix-plugin-example` are documented here.
 Historical entries are kept verbatim; corrections fold in as new
 entries (estate precedent).
 
+## Unreleased — 2026-10-30
+
+### Fixed — W-min36 minors batch (example minors campaign)
+
+- `src/HelloMetadataProvider.php` no longer anchors its contract story to
+  `PHLIX_EXPANSION_PLAN.md` — a file that exists in no estate repo. The
+  docblock now names the real provenance: `Phlix\Shared\Plugin\`
+  `LifecycleInterface`, published in `detain/phlix-shared` (M-EXAMPLE-03).
+- The mangled "Lifecycle notes" docblock interior (nine stray-indented
+  lines in the exact sample the estate clones) is re-aligned to the
+  block's ` * ` column (M-EXAMPLE-04; also the indent half of
+  M-EXAMPLE-16 — the `Squiz.Commenting.DocCommentAlignment` sniff that
+  keeps it fixed lands with W-min38).
+- `scripts/add-headers.php` `collect()` now really prunes the excluded
+  directories (`vendor/`, `.git/`, `generated/`, `node_modules/`,
+  `.phpunit.cache/`) via `RecursiveCallbackFilterIterator` — returning
+  false stops the descent. The previous `setFlags(CATCH_GET_CHILD)` +
+  `continue` idiom pruned nothing; proven red on the old code (files
+  under excluded dirs were rewritten) and green on the new
+  (M-EXAMPLE-15).
+
+Verified already cured at `99906be1` (README rewrite, ancestry-proved,
+no re-fix dispatched): fork step 2 now enumerates
+`phlix_min_server_version` (M-EXAMPLE-02) and states the event-alias
+law — aliases are validation metadata, `subscribedEvents()` binds
+(M-EXAMPLE-10).
+
 ## Unreleased — 2026-10-29
 
 ### Changed — docs(readme): make the install/usage recipe actually work
