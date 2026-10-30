@@ -16,8 +16,8 @@ Regenerate the autoloader and lint after adding or renaming a class:
 composer dump-autoload                       # regenerate PSR-4 map after adding a class under src/
 php -l src/HelloMetadataProvider.php         # lint the entry class
 composer validate                            # check composer.json is well-formed
-composer phpstan                             # phpstan.neon level 9 over src/
-composer phpcs                               # vendor/bin/phpcs src --standard=PSR12 (PSR-12 only; phpcs.xml is not consulted by this command)
+composer phpstan                             # phpstan.neon: level 9 over src/ and scripts/
+composer phpcs                               # phpcs.xml: PSR-12 + Squiz.Commenting.DocCommentAlignment over src/ and scripts/
 php scripts/security-audit-check.php         # security gate: audit the whole lock (require + require-dev)
 php scripts/add-headers.php                  # idempotent @copyright/@license header insertion
 ```
@@ -30,7 +30,7 @@ php scripts/add-headers.php                  # idempotent @copyright/@license he
 - **Tests**: `tests/HelloMetadataProviderTest.php` — 14 tests covering `lookup()`, `subscribedEvents()`, and the `onEnable()`/`onDisable()` no-ops; `tests/SecurityAuditCheckTest.php` — 28 guard tests that execute `scripts/security-audit-check.php` and parse `.github/workflows/test.yml`; bootstrap `tests/bootstrap.php` autoloads then loads the stub fallback.
 - **Stub**: `dev-stubs/LifecycleInterface.php` — used only when `detain/phlix-shared` is not installed.
 - **Scripts**: `scripts/security-audit-check.php` — runs `composer audit --locked --format=json` over the whole lock, labels each finding `[require]`/`[require-dev]`, blocks on any advisory, and floors the corpus (`MIN_AUDITED_PACKAGES` 28, `MIN_AUDITED_DEV_PACKAGES` 24); `scripts/add-headers.php` — inserts the `@copyright`/`@license` file docblock.
-- **Config**: `phpunit.xml` (bootstrap + `src` coverage, cobertura report), `phpstan.neon` (level 9), `phpcs.xml` (PSR-12 declared as `<rule ref="PSR12"/>` — PHPCS 4.x uses `ref`, not `name`). **CI**: `.github/workflows/test.yml` runs install + phpunit + PHPStan + PHPCS on push to `master`/`main` and on PRs, uploading coverage to Codacy from the `8.3` matrix leg only, then a final `composer-audit` job running `php scripts/security-audit-check.php`.
+- **Config**: `phpunit.xml` (bootstrap + `src` coverage, cobertura report), `phpstan.neon` (level 9 over `src` and `scripts`), `phpcs.xml` (PSR-12 via `<rule ref="PSR12"/>` — PHPCS 4.x uses `ref`, not `name` — plus `Squiz.Commenting.DocCommentAlignment`; `PSR1.Files.SideEffects` excluded for `scripts/`). **CI**: `.github/workflows/test.yml` runs install + phpunit + PHPStan + PHPCS on push to `master`/`main` and on PRs, uploading coverage to Codacy from the `8.3` matrix leg only, then a final `composer-audit` job running `php scripts/security-audit-check.php`.
 
 ## Conventions
 

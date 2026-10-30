@@ -5,6 +5,11 @@ on:
     branches: [master, main]
   pull_request:
 
+# Least privilege: every job here only reads the repository; nothing
+# publishes packages, deploys, or writes pull-request comments.
+permissions:
+  contents: read
+
 jobs:
   phpunit:
     runs-on: ubuntu-26.04
@@ -38,10 +43,10 @@ jobs:
           coverage-reports: ./coverage.xml
 
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyse src --level=9
+        run: vendor/bin/phpstan analyse
 
       - name: Run PHPCS
-        run: vendor/bin/phpcs src --standard=PSR12
+        run: vendor/bin/phpcs
 
   # S246 — this repository had NO security audit gate at all. On 2026-08-06 a
   # HIGH advisory (CVE-2026-67434, OS command injection, GHSA-hmqg-cxww-wqhq)

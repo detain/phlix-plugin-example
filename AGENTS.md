@@ -11,8 +11,8 @@ vendor/bin/phpunit --filter test_subscribed_events_is_empty
 ```
 
 ```bash
-composer phpstan          # vendor/bin/phpstan analyse src --level=9 (phpstan.neon)
-composer phpcs            # vendor/bin/phpcs src --standard=PSR12 (phpcs.xml)
+composer phpstan          # vendor/bin/phpstan analyse — reads phpstan.neon (level 9 over src/ + scripts/)
+composer phpcs            # vendor/bin/phpcs — reads phpcs.xml (PSR-12 + docblock-alignment sniff over src/ + scripts/)
 php scripts/security-audit-check.php   # security gate: audits the whole lock (require + require-dev)
 ```
 
@@ -24,7 +24,7 @@ php scripts/security-audit-check.php   # security gate: audits the whole lock (r
 - **Tests**: `tests/HelloMetadataProviderTest.php` (14 tests: `lookup()`, `subscribedEvents()`, and the `onEnable()`/`onDisable()` no-ops), `tests/SecurityAuditCheckTest.php` (28 guard tests that execute `scripts/security-audit-check.php` and parse `.github/workflows/test.yml`), bootstrap `tests/bootstrap.php`; config `phpunit.xml`.
 - **Stub**: `dev-stubs/LifecycleInterface.php` — fallback only when `detain/phlix-shared` is absent.
 - **Scripts**: `scripts/security-audit-check.php` — `composer audit --locked --format=json` over the whole lock, findings labelled `[require]`/`[require-dev]`, blocking on advisories, corpus floored at `MIN_AUDITED_PACKAGES` 28 / `MIN_AUDITED_DEV_PACKAGES` 24; `scripts/add-headers.php` — idempotent `@copyright`/`@license` header insertion.
-- **Lint config**: `phpstan.neon` (level 9 over `src`), `phpcs.xml` (PSR-12 declared as `<rule ref="PSR12"/>` — PHPCS 4.x uses `ref`, not `name`).
+- **Lint config**: `phpstan.neon` (level 9 over `src` and `scripts`), `phpcs.xml` (PSR-12 via `<rule ref="PSR12"/>` — PHPCS 4.x uses `ref`, not `name — plus `Squiz.Commenting.DocCommentAlignment`, with `PSR1.Files.SideEffects` excluded for the `scripts/` entry points).
 - **CI**: `.github/workflows/test.yml` runs install + phpunit + PHPStan + PHPCS on push to `master`/`main` and on PRs, and uploads the phpunit cobertura coverage report to Codacy from the `8.3` matrix leg only; a final `composer-audit` job runs `php scripts/security-audit-check.php`.
 
 ## Conventions

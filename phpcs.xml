@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="Phlix Plugin Example">
-    <description>PSR-12 coding standard for phlix-plugin-example</description>
+    <description>PSR-12 plus docblock-alignment enforcement for phlix-plugin-example (src/ and scripts/)</description>
     <file>src</file>
+    <file>scripts</file>
     <exclude-pattern>vendor/</exclude-pattern>
     <rule ref="PSR12"/>
+    <!--
+        Doc-block continuation lines must align on the ` * ` column. The W-min36
+        batch had to repair a mangled provider docblock by hand; without this
+        sniff nothing here — and nothing in a fork of this template — would keep
+        catching that class of damage. Named under Squiz: PHPCS 4.x ships no
+        Generic.Comment.DocCommentAlignment sniff (verified with `phpcs -i`).
+    -->
+    <rule ref="Squiz.Commenting.DocCommentAlignment"/>
+    <!--
+        scripts/*.php are CLI entry points run as `php scripts/<name>.php`;
+        top-level code with side effects is their entire design, so the
+        one-class-per-file side-effects rule does not apply to them.
+    -->
+    <rule ref="PSR1.Files.SideEffects">
+        <exclude-pattern>scripts/*</exclude-pattern>
+    </rule>
 </ruleset>

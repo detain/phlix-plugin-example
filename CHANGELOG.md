@@ -64,6 +64,49 @@ law — aliases are validation metadata, `subscribedEvents()` binds
   (the repo has no `main` branch); CLAUDE.md's "phpcs per phpcs.xml"
   comment corrected to what the command actually runs.
 
+### Fixed — W-min38 minors batch (example minors campaign)
+
+- `.gitignore`: `/composer.lock` line removed (M-EXAMPLE-01/06). The
+  lock is COMMITTED (the `composer-audit` CI job runs
+  `composer audit --locked` and needs it in the checkout), so
+  ignoring it taught forks a policy their own CI contradicts.
+- `.github/workflows/test.yml` (M-EXAMPLE-08): top-level
+  `permissions: contents: read` — every job in this workflow only
+  reads the checkout (phpunit/phpstan/phpcs matrix + the locked
+  `composer-audit` job), yet the default GITHUB_TOKEN grants write
+  scope; the template should demonstrate the least-privilege posture.
+- Lint configs given teeth and made authoritative (M-EXAMPLE-16/17):
+  `phpstan.neon` paths now cover `scripts` as well as `src` (the audit
+  gate script and the header helper were invisible to static
+  analysis); `phpcs.xml` gains `<file>scripts</file>` and the
+  `Squiz.Commenting.DocCommentAlignment` sniff — the class of mangled
+  docblock W-min36 repaired by hand now reddens CI instead of
+  recurring (named under Squiz: PHPCS 4.x ships no
+  `Generic.Comment.DocCommentAlignment`; verified with `phpcs -i`),
+  with `PSR1.Files.SideEffects` excluded for `scripts/*` because CLI
+  entry points are side effects by design. The CI steps and composer
+  scripts switched to config-driven invocations (`phpstan analyse` /
+  `phpcs`, no inline paths or `--standard`) so local and CI lint agree
+  — a fork editing `phpstan.neon`/`phpcs.xml` now actually changes
+  what CI enforces. Teeth probed: a planted misaligned docblock under
+  `scripts/` reddened `composer phpcs`; removal went clean.
+- Making `scripts` PHPStan-visible surfaced 9 level-9 findings in
+  `scripts/add-headers.php` (the pre-existing 13 minus the 4 the
+  W-min36 rewrite dissolved) — all fixed honestly, not baselined: a
+  `readFileOrFail()` helper (fail-loud `RuntimeException` instead of
+  propagating `file_get_contents`' `false` through `str_contains`/
+  `preg_match`/`substr`), and an `instanceof \SplFileInfo` guard
+  narrowing the iterator node before `isFile()`/`getExtension()`/
+  `getPathname()`. `security-audit-check.php` passed level 9 over
+  `scripts` unchanged; its 121-char notice-format line was re-wrapped
+  (two adjacent literals — the runtime string is byte-ident, and
+  guard test `:610` pins the rendered notice). `composer.json` scripts
+  section does not feed the lock `content-hash`, so no lock rotation
+  was needed (verified: recomputed hash identical;
+  `composer validate --strict` green).
+- `AGENTS.md`/`CLAUDE.md` command-truth lines re-aimed at the
+  config-driven invocations they now describe.
+
 ## Unreleased — 2026-10-29
 
 ### Changed — docs(readme): make the install/usage recipe actually work

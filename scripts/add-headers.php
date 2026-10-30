@@ -39,7 +39,7 @@ foreach (getPHPFiles($repoRoot) as $file) {
     $relativePath = substr($file, strlen($repoRoot) + 1);
 
     // Skip files that already carry the copyright line.
-    $content = file_get_contents($file);
+    $content = readFileOrFail($file);
     if (str_contains($content, $copyrightLine)) {
         echo "SKIP  {$relativePath}  (already has copyright)\n";
         $skipped++;
@@ -117,10 +117,29 @@ function collect(string $dir, array &$files, array $excludes): void
     $iterator = new RecursiveIteratorIterator($pruned, RecursiveIteratorIterator::SELF_FIRST);
 
     foreach ($iterator as $node) {
-        if ($node->isFile() && $node->getExtension() === 'php') {
-            $files[] = $node->getPathname();
+        if (!$node instanceof \SplFileInfo) {
+            continue;
         }
+        if (!$node->isFile() || $node->getExtension() !== 'php') {
+            continue;
+        }
+        $files[] = $node->getPathname();
     }
+}
+
+/**
+ * Read a file or fail loudly — the script never continues on a partial read.
+ *
+ * @throws RuntimeException When the file cannot be read.
+ */
+function readFileOrFail(string $file): string
+{
+    $content = file_get_contents($file);
+    if ($content === false) {
+        throw new RuntimeException("Cannot read {$file} — aborting before any header is written.");
+    }
+
+    return $content;
 }
 
 /**
@@ -128,7 +147,7 @@ function collect(string $dir, array &$files, array $excludes): void
  */
 function inferDescription(string $file, string $_relativePath): string
 {
-    $content = file_get_contents($file);
+    $content = readFileOrFail($file);
 
     // Try to extract namespace or class name.
     if (preg_match('/^namespace\s+([^;]+);/m', $content, $nsMatch)) {
