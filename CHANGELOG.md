@@ -136,6 +136,23 @@ law — aliases are validation metadata, `subscribedEvents()` binds
   pins re-truthed to the measured 30 guard / 12 provider in the same
   commit (suite: 42 tests, 153 assertions, previously 42/151).
 
+### Added — M-EXAMPLE-07 (majors: API-key / outbound-call guidance on the teaching surfaces)
+
+- The README gained **Settings & secrets** and **Outbound calls**
+  sections, mirrored into the `metadata-provider-class` skill
+  (Critical list + the step-7 aside) and into fork step 4. The
+  template now names the blessed config seam explicitly: API keys
+  are declared `"secret": true` with `"default": null` (host-masked
+  via `Phlix\Plugins\SettingsMasker`, sentinel-kept on save), reach
+  the instance only through `ConfigurableInterface::configure()`,
+  must never surface raw in logs or returned strings, and upstream
+  calls follow the `phlix-plugin-omdb` posture — https, explicit
+  timeout, TLS verification on. Docs-only cure; the demo class
+  still makes no network call. (The queue's `cured-by: 99906be` was
+  adjacent-only: that commit rewrote the install recipe; the
+  secret/outbound guidance was proven absent at the tip —
+  reconciler true-miss, content-verified before this fix.)
+
 ## Unreleased — 2026-10-29
 
 ### Changed — docs(readme): make the install/usage recipe actually work

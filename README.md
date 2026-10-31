@@ -149,6 +149,64 @@ The fixture path lives at
 `Phlix\PluginExample\HelloMetadataProvider::FIXTURE_PATH` if you want
 to reference it from tests.
 
+## Settings & secrets
+
+A real fork outgrows the demo quickly — usually by adding an upstream
+API key (TMDB, TVDB, Fanart.tv, the classic metadata sources). This
+template makes no network call, so the rules it cannot demonstrate are
+stated here instead of being left to each cloner's improvisation:
+
+- **A secret has no place in the manifest.** `plugin.json` ships in
+  your public archive and is the bytes the installer fetches; a
+  `default` carrying a real key leaks it to every clone. Declare the
+  key with `"secret": true` and `"default": null` — `required: true`
+  is still fine, the host null-fills (see the Note in **Fork as a
+  starter** step 2) — exactly the shape
+  [`phlix-plugin-omdb`](https://github.com/detain/phlix-plugin-omdb)
+  uses for its `api_key`.
+- **`"secret": true` is the blessed config seam.** Only flagged keys
+  are host-managed secrets: the admin API
+  (`GET /api/v1/admin/plugins/{name}`) renders their stored values
+  masked (`***` — `Phlix\Plugins\SettingsMasker` server-side), and
+  the configure-form save keeps the stored secret when the UI
+  round-trips the mask sentinel unchanged. A key declared *without*
+  the flag round-trips visibly through admin surfaces — the flag,
+  not the key's name, is what makes a setting a secret.
+- **Read keys only through `configure()`.**
+  `Phlix\Shared\Plugin\ConfigurableInterface::configure(array $settings)`
+  is, per the loader's own words, "the ONLY channel by which a plugin
+  receives its configured API keys/options"
+  (`phlix-server/src/Plugins/PluginLoader.php`). Stash it in a private
+  property; never write the whole settings array — or any one secret
+  value — into a log line.
+- **Never let a raw secret reach an output surface**, including
+  strings you return as `title` and URLs you print on failure. When
+  the upstream demands the key in a query string, redact it on every
+  log/exception surface — `OmdbApi::MASKED_APIKEY` +
+  `redactSecrets()` in `phlix-plugin-omdb` are the reference.
+
+## Outbound calls
+
+`HelloMetadataProvider` never touches the network; your replacement
+probably will. The estate posture to copy — demonstrated by the live
+metadata plugins, not by this demo:
+
+- **https, with no runtime exception.** The installer is HTTPS-only
+  (SV-S2b — see **Install** above); mirroring that gate in your own
+  calls costs nothing: pin an `https://` base URL as a constant
+  (`OmdbApi::API_BASE`).
+- **Explicit timeout, TLS verification on.** Use the HTTP client the
+  host runtime already carries — `Workerman\Http\Client`,
+  constructed with `'timeout' => …` — and leave `verify_ssl` enabled.
+  `phlix-plugin-omdb` defaults verification on and exposes the
+  opt-out as a deliberate `use_ssl_verification` setting rather than
+  silently disabling it. Never reach for `file_get_contents()` or a
+  raw socket without a timeout: a blocking call with no bound can
+  stall the worker process your plugin shares with the host.
+- **Bound your own retries.** `OmdbApi::enforceRateLimit()` shows a
+  plugin staying inside its upstream's contract; retry storms are
+  the plugin's problem, not the provider's fault budget.
+
 ## Fork as a starter
 
 This repository is intentionally small (one PHP class, two test files
@@ -182,7 +240,9 @@ plus a bootstrap) so you can copy it as the seed for your own plugin:
    the interface your manifest `type` is actually consulted through
    (metadata providers: `MetadataSourceInterface`) — copying the demo
    `lookup()` signature gives you a plugin that enables and does
-   nothing.
+   nothing. If the new class needs an API key or calls an upstream
+   service, follow **Settings & secrets** and **Outbound calls**
+   above — do not improvise key handling.
 5. Replace the tests in **`tests/`** to match — but **keep**
    `tests/SecurityAuditCheckTest.php`, `scripts/security-audit-check.php`
    and the `composer-audit` job in `.github/workflows/test.yml`. That

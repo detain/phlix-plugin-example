@@ -14,6 +14,8 @@ Scaffold a new Phlix lifecycle/metadata-provider PHP class under `src/`, byte-fo
 - **Namespace is `Phlix\PluginExample\`** (PSR-4 → `src/`, per `composer.json`). One `final class` per file; the file name MUST equal the class name (e.g. `class TmdbMetadataProvider` → `src/TmdbMetadataProvider.php`).
 - **`onEnable()` must stay cheap** — only stash the container. Do real work in `lookup()` or event listeners, never in `onEnable()`.
 - Reference fixtures via a class constant (e.g. `self::FIXTURE_PATH`), never a hardcoded literal inside `lookup()`.
+- **API keys come from the host's secret seam, never from code.** Declare them in `plugin.json` as `"secret": true` with `"default": null` and read them only via `ConfigurableInterface::configure()` — a key literal in `src/`, a real key as a manifest default, or a settings value written raw to a log all violate the README's **"Settings & secrets"** rules (`phlix-plugin-omdb` is the reference).
+- **Any real upstream call: https, explicit timeout, TLS verification on** (`Workerman\Http\Client` with `'timeout'`), and redact key-bearing URLs/errors before logging — see README **"Outbound calls"**.
 - Do NOT edit `plugin.json`, `composer.json`, or write tests as part of this skill — those are separate tasks.
 
 ## Instructions
@@ -100,7 +102,7 @@ Scaffold a new Phlix lifecycle/metadata-provider PHP class under `src/`, byte-fo
        }
    }
    ```
-   This uses `FIXTURE_PATH` from Step 4 and `$this->greeting` from Step 5. A real provider replaces the body with parse-path → call upstream API → return the merged array.
+   This uses `FIXTURE_PATH` from Step 4 and `$this->greeting` from Step 5. A real provider replaces the body with parse-path → call upstream API → return the merged array — when you make that change, follow the README's **Settings & secrets** and **Outbound calls** rules: keys arrive only through `ConfigurableInterface::configure()` (never literals, never manifest defaults), calls are https with an explicit timeout and TLS verification on, and no raw key ever reaches a log line or a returned string.
 
 8. **Regenerate the autoloader and verify the class loads.** The class will not autoload until Composer's classmap knows about it:
    ```bash
