@@ -4,6 +4,17 @@ All notable changes to `phlix-plugin-example` are documented here.
 Historical entries are kept verbatim; corrections fold in as new
 entries (estate precedent).
 
+## 0.1.2 — 2026-11-03
+
+Release stamp: manifest `version` bumped 0.1.1 → 0.1.2 (tag `v0.1.2`) so the
+phlix-plugins catalog release entry tracks the new tag — the updater derives
+entry versions from `plugin.json` AT the tag, the mechanism that made the
+0.1.1 bump necessary. The content of this release is exactly the batches
+booked verbatim under the `Unreleased` headings below since `b3ecf24`
+(W-min36–39 minors + M-EXAMPLE-07 doc/security passes, the verified README
+install/usage rewrite, S440 guard hardening, ubuntu-26.04 CI pin, dependency
+security update). Existing entries unchanged (history-verbatim law).
+
 ## Unreleased — 2026-10-30
 
 ### Fixed — W-min36 minors batch (example minors campaign)
