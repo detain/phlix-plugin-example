@@ -3,53 +3,68 @@
 [![tests](https://github.com/detain/phlix-plugin-example/actions/workflows/test.yml/badge.svg)](https://github.com/detain/phlix-plugin-example/actions/workflows/test.yml)
 
 > Reference **metadata-provider** plugin for [Phlix](https://github.com/detain/phlix-server)
-> — the smallest plugin that exercises the full Phase A loader lifecycle.
+> — the smallest plugin that demonstrates the wiring a real host consults.
 
 This repo is the canonical hello-world template for Phlix plugin
-authors. It does almost nothing on purpose: it implements the
-`Phlix\Shared\Plugin\LifecycleInterface` contract, returns a fixed
-greeting when its `lookup()` method is asked about one well-known
-fixture path, and ships with a CI workflow plus PHPUnit tests so you
-can fork it as a starter. Read **"What it does"** below before you copy
-anything — the demo method is deliberately *not* wired to a live host
-call path, and the live call paths are named there.
+authors. It does almost nothing on purpose — but it is armed exactly
+like a real plugin: it implements the three shared contracts a
+metadata provider is consulted through
+(`LifecycleInterface` + `ConfigurableInterface` +
+`MetadataSourceInterface`), answers the metadata triad with a fixed
+greeting for one well-known fixture, delivers the manifest `greeting`
+setting through `configure()`, and ships with a CI workflow plus
+PHPUnit tests so you can fork it as a starter. Read **"What it does"**
+below for the call-path tour — `lookup()` is a didactic helper the
+host never calls, and the live call paths are named there.
 
 ## What it does
 
-Calling `HelloMetadataProvider::lookup('/test/hello.mkv')` returns:
+The host drives this plugin through three contracts, all implemented:
 
-```php
-['title' => 'Hello, World']
-```
+- **Lifecycle** — `Phlix\Shared\Plugin\LifecycleInterface`
+  (`onEnable()`, `onDisable()`, `subscribedEvents()`): the
+  instantiate/enable/disable contract the loader runs every plugin
+  through.
+- **Settings delivery** — `Phlix\Shared\Plugin\ConfigurableInterface`
+  (`configure(array $settings)`). Per the loader's own words this is
+  "the ONLY channel by which a plugin receives its configured API
+  keys/options" (`Phlix\Plugins\PluginLoader` in `phlix-server`,
+  applied once between construction and `onEnable()`). That is how an
+  operator's `greeting` override from `plugin.json` reaches the
+  instance — and it is the seam this template exists to demonstrate.
+- **Metadata pipeline** —
+  `Phlix\Shared\Metadata\MetadataSourceInterface`
+  (`sourceName()`, `supportedMediaTypes()`, `search()`,
+  `getDetails()`, `getImages()`). `PluginLoader::enable()` registers
+  an entry instance into the metadata `SourceRegistry` **only** when
+  it is `instanceof` that interface — a clone that drops it enables
+  cleanly and does nothing forever.
 
-Any other path returns an empty array.
+Through the triad, the reference source is `example`
+(`sourceName()`, the slug an admin adds to a
+`metadata.provider_priority` list), registered for `movie` items
+(`supportedMediaTypes()`), and:
 
-> **Read this before you copy the class.** `lookup()` is a didactic
-> method: the host never calls it. There is no plugin-entry `lookup()`
-> call site anywhere in `phlix-server/src`, and the loader only
-> requires `LifecycleInterface` to enable a plugin — so a clone that
-> keeps this shape enables cleanly and does nothing forever. The
-> contracts the host actually consults are:
->
-> - **Metadata sources** — implement
->   `Phlix\Shared\Metadata\MetadataSourceInterface`
->   (`sourceName()`, `supportedMediaTypes()`, `search()`,
->   `getDetails()`, `getImages()`). `PluginLoader::enable()` registers
->   an entry instance into the metadata `SourceRegistry` **only** when
->   it is `instanceof` that interface.
-> - **Settings delivery** — implement
->   `Phlix\Shared\Plugin\ConfigurableInterface`
->   (`configure(array $settings)`). Per the loader's own words this is
->   "the ONLY channel by which a plugin receives its configured API
->   keys/options".
->
-> This reference class implements neither, which is why the
-> `greeting` setting is stored but never delivered: an operator's
-> override round-trips into the `plugins` table while the instance
-> keeps its constructor default. The live metadata plugins (e.g.
-> `phlix-plugin-omdb`) show the real arms; the
-> [developer guide](https://github.com/detain/phlix-docs/blob/master/docs/plugins/developer-guide.md)
-> tours the contracts.
+- `search('hello')` returns `[['id' => 'hello', 'title' => 'Hello, World']]`
+  — the fixture, best-match first; any other query returns `[]`.
+- `getDetails('hello')` returns `['title' => 'Hello, World']`; any
+  other id returns `[]`. It routes through `lookup()`, below, so the
+  fixture shape lives in one place.
+- `getImages()` always returns `[]` — the reference ships no artwork,
+  and an empty map is the contract-legal way to say so.
+
+> **`lookup()` is a didactic method: the host never calls it.** There
+> is no plugin-entry `lookup()` call site anywhere in
+> `phlix-server/src`. It is the shape this template predates, kept as
+> the fixture helper `getDetails()` delegates to — calling
+> `lookup('/test/hello.mkv')` returns `['title' => 'Hello, World']`
+> (any other path `[]`), but the live path into that code is the triad
+> above. Forkers replace the triad bodies, not `lookup()` alone.
+
+The live metadata plugins (e.g.
+`phlix-plugin-omdb`) show the production arms of the same trio; the
+[developer guide](https://github.com/detain/phlix-docs/blob/master/docs/plugins/developer-guide.md)
+tours the contracts.
 
 ## Install
 
@@ -135,13 +150,20 @@ for the curated one-click path.
 
 ## Use
 
-Because the host never calls `lookup()` (see "What it does"), the only
-honest demo is the in-process one — exactly what
-`tests/HelloMetadataProviderTest.php` exercises:
+On a live host, install and enable the plugin (see **Install**); the
+loader configures it from the persisted settings and registers it as
+the `example` metadata source, so `search('hello')` /
+`getDetails('hello')` answer for movie items — with the operator's
+`greeting` override applied.
+
+The in-process demo is what `tests/HelloMetadataProviderTest.php`
+exercises, mirroring the same path:
 
 ```php
 $provider = new \Phlix\PluginExample\HelloMetadataProvider();
-$provider->lookup('/test/hello.mkv'); // ['title' => 'Hello, World']
+$provider->configure(['greeting' => 'Bonjour, Monde']); // the host's settings channel
+$provider->getDetails('hello');   // ['title' => 'Bonjour, Monde']
+$provider->lookup('/test/hello.mkv'); // ['title' => 'Bonjour, Monde'] (didactic helper)
 $provider->lookup('/anything/else');  // []
 ```
 
@@ -152,9 +174,11 @@ to reference it from tests.
 ## Settings & secrets
 
 A real fork outgrows the demo quickly — usually by adding an upstream
-API key (TMDB, TVDB, Fanart.tv, the classic metadata sources). This
-template makes no network call, so the rules it cannot demonstrate are
-stated here instead of being left to each cloner's improvisation:
+API key (TMDB, TVDB, Fanart.tv, the classic metadata sources). The
+`configure()` seam itself is demonstrated above (it is how the
+`greeting` arrives); the network rules this template cannot
+demonstrate are stated here instead of being left to each cloner's
+improvisation:
 
 - **A secret has no place in the manifest.** `plugin.json` ships in
   your public archive and is the bytes the installer fetches; a
@@ -236,12 +260,15 @@ plus a bootstrap) so you can copy it as the seed for your own plugin:
    prefix under `autoload.psr-4`.
 4. Rewrite **`src/HelloMetadataProvider.php`** with your own
    implementation, keeping `onEnable()` cheap and doing the heavy work
-   in the listener methods declared by `subscribedEvents()`. Implement
-   the interface your manifest `type` is actually consulted through
-   (metadata providers: `MetadataSourceInterface`) — copying the demo
-   `lookup()` signature gives you a plugin that enables and does
-   nothing. If the new class needs an API key or calls an upstream
-   service, follow **Settings & secrets** and **Outbound calls**
+   behind the contract methods. The reference class already implements
+   the interfaces your manifest `type` is consulted through (metadata
+   providers: `MetadataSourceInterface`, settings via
+   `ConfigurableInterface`) — keep the interfaces and replace their
+   bodies with real upstream calls. The didactic `lookup()` helper is
+   the one piece you may drop: the host never calls it, so a fork
+   that keeps only that shape enables and does nothing. If the new
+   class needs an API key or calls an upstream service, follow
+   **Settings & secrets** and **Outbound calls**
    above — do not improvise key handling.
 5. Replace the tests in **`tests/`** to match — but **keep**
    `tests/SecurityAuditCheckTest.php`, `scripts/security-audit-check.php`

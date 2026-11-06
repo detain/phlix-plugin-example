@@ -9,7 +9,9 @@
         "greeting": {
             "type": "string",
             "required": false,
-            "default": "Hello, World"
+            "default": "Hello, World",
+            "label": "Greeting",
+            "description": "Title this metadata source returns for the demo fixture. Demonstrates the settings seam: the host delivers the persisted value through ConfigurableInterface::configure()."
         }
     },
     "signature": null

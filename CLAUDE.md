@@ -1,6 +1,6 @@
 # phlix-plugin-example
 
-Reference **metadata-provider** plugin for [Phlix](https://github.com/detain/phlix-server) — one `final` PHP class exercising the plugin lifecycle contract. PHPUnit `^10`, depends on `detain/phlix-shared ^0.21.0`.
+Reference **metadata-provider** plugin for [Phlix](https://github.com/detain/phlix-server): one `final` PHP class exercising the plugin contract trio (lifecycle, settings delivery via `configure()`, metadata source). PHPUnit `^10`, depends on `detain/phlix-shared ^0.21.0`.
 
 ## Commands
 
@@ -24,8 +24,8 @@ php scripts/add-headers.php                  # idempotent @copyright/@license he
 
 ## Architecture
 
-- **Entry**: `src/HelloMetadataProvider.php` — implements `Phlix\Shared\Plugin\LifecycleInterface`; `lookup()` returns `['title' => $greeting]` for `FIXTURE_PATH`, else `[]`.
-- **Manifest**: `plugin.json` — `entry` FQCN, `settings.greeting` (default `"Hello, World"`), `events: []`, `phlix_min_server_version`; `version` is `0.1.2`.
+- **Entry**: `src/HelloMetadataProvider.php` — implements the shared trio `ConfigurableInterface` + `LifecycleInterface` + `MetadataSourceInterface`; `configure()` applies the persisted `greeting`, and the metadata triad answers the `hello` fixture (`search('hello')` → `getDetails('hello')` → `['title' => $greeting]`, routed through the didactic `lookup()` the host never calls).
+- **Manifest**: `plugin.json` — `entry` FQCN, `settings.greeting` (default `"Hello, World"`, with `label`/`description` for the settings UI), `events: []`, `phlix_min_server_version`; `version` is `0.1.2`.
 - **Package**: `composer.json` — PSR-4 `Phlix\PluginExample\` → `src/`, `Phlix\PluginExample\Tests\` → `tests/`.
 - **Tests**: `tests/HelloMetadataProviderTest.php` — 12 tests covering `lookup()`, `subscribedEvents()`, and the `onEnable()`/`onDisable()` no-ops; `tests/SecurityAuditCheckTest.php` — 30 guard tests that execute `scripts/security-audit-check.php` and parse `.github/workflows/test.yml`; bootstrap `tests/bootstrap.php` requires the Composer autoloader (which loads `detain/phlix-shared`).
 - **Scripts**: `scripts/security-audit-check.php` — runs `composer audit --locked --format=json` over the whole lock, labels each finding `[require]`/`[require-dev]`, blocks on any advisory, and floors the corpus (`MIN_AUDITED_PACKAGES` 28, `MIN_AUDITED_DEV_PACKAGES` 24); `scripts/add-headers.php` — inserts the `@copyright`/`@license` file docblock.
@@ -35,7 +35,7 @@ php scripts/add-headers.php                  # idempotent @copyright/@license he
 
 - `declare(strict_types=1);` at top of every `.php` file, below a `@copyright`/`@license` docblock; `final` classes; constructor injection.
 - Namespace `Phlix\PluginExample\`, one class per file under `src/`.
-- Lifecycle: `onEnable(ContainerInterface)`, `onDisable()`, `subscribedEvents(): array` — keep `onEnable()` cheap, do work in listeners.
+- Lifecycle: `onEnable(ContainerInterface)`, `onDisable()`, `subscribedEvents(): array` — keep `onEnable()` cheap, do work in listeners. Persisted settings arrive only through `configure(array $settings)` (`ConfigurableInterface`).
 - Reference fixtures via `HelloMetadataProvider::FIXTURE_PATH`, never a hardcoded path.
 - Plugin `name` must start with `phlix-plugin-`; bump `version` in `plugin.json`.
 - Never add `--no-dev`, `continue-on-error`, or an `if:` condition to the `composer-audit` job, and keep it last in `.github/workflows/test.yml` — `tests/SecurityAuditCheckTest.php` fails on each.

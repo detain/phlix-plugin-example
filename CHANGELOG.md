@@ -36,6 +36,37 @@ entries (estate precedent).
   contract, and the unsatisfiable "keep the stub byte-compatible" instruction
   is retired.
 
+### Changed — reference class wired through the real host contracts
+
+- `src/HelloMetadataProvider.php` now implements
+  `Phlix\Shared\Plugin\ConfigurableInterface` and
+  `Phlix\Shared\Metadata\MetadataSourceInterface` alongside the lifecycle
+  contract, so the canonical scaffold demonstrates the two seams it
+  previously only told forkers about: `configure()` applies the persisted
+  `greeting` (the loader's preferred typed settings channel, called between
+  construction and `onEnable()`), and the metadata triad — `sourceName()`
+  `example`, media type `movie`, `search('hello')` →
+  `getDetails('hello')` → `['title' => <configured greeting>]`, `getImages()`
+  empty — is what `Phlix\Plugins\PluginLoader` registers into the metadata
+  `SourceRegistry` on enable. `getDetails()` routes the fixture id through
+  the existing `lookup()` helper, so the greeting shape lives in one place.
+- Class docblocks now tell the shipped truth: the loader is
+  `Phlix\Plugins\PluginLoader` in `detain/phlix-server` (the previously
+  credited `Phlix\Shared\Plugin\Loader` does not exist), the host never
+  calls `lookup()` — which stays as the didactic fixture helper
+  `getDetails()` delegates to — and a production provider shapes results
+  per the plugin-facing `MetadataSourceInterface::getDetails()`, not the
+  server-private `Phlix\Media\Metadata\MetadataProviderInterface`.
+- `plugin.json`: the `greeting` setting gains `label` and `description`,
+  demonstrating the settings-UI vocabulary the bundled schema supports
+  (validated against
+  `vendor/detain/phlix-shared/schemas/manifest.schema.json`; the `default`
+  mirror and the `version` are untouched).
+- `README.md`, `AGENTS.md`, and `CLAUDE.md`: the "What it does" passage
+  shrinks from confession to tour guide — the contract trio, the live call
+  paths, and the settings seam now read as demonstrated, and the fork
+  instructions tell authors to keep the interfaces and replace their bodies.
+
 ## 0.1.2 — 2026-11-03
 
 Release stamp: manifest `version` bumped 0.1.1 → 0.1.2 (tag `v0.1.2`) so the
