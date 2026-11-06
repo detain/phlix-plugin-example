@@ -27,8 +27,7 @@ php scripts/add-headers.php                  # idempotent @copyright/@license he
 - **Entry**: `src/HelloMetadataProvider.php` — implements `Phlix\Shared\Plugin\LifecycleInterface`; `lookup()` returns `['title' => $greeting]` for `FIXTURE_PATH`, else `[]`.
 - **Manifest**: `plugin.json` — `entry` FQCN, `settings.greeting` (default `"Hello, World"`), `events: []`, `phlix_min_server_version`; `version` is `0.1.2`.
 - **Package**: `composer.json` — PSR-4 `Phlix\PluginExample\` → `src/`, `Phlix\PluginExample\Tests\` → `tests/`.
-- **Tests**: `tests/HelloMetadataProviderTest.php` — 12 tests covering `lookup()`, `subscribedEvents()`, and the `onEnable()`/`onDisable()` no-ops; `tests/SecurityAuditCheckTest.php` — 30 guard tests that execute `scripts/security-audit-check.php` and parse `.github/workflows/test.yml`; bootstrap `tests/bootstrap.php` autoloads then loads the stub fallback.
-- **Stub**: `dev-stubs/LifecycleInterface.php` — used only when `detain/phlix-shared` is not installed.
+- **Tests**: `tests/HelloMetadataProviderTest.php` — 12 tests covering `lookup()`, `subscribedEvents()`, and the `onEnable()`/`onDisable()` no-ops; `tests/SecurityAuditCheckTest.php` — 30 guard tests that execute `scripts/security-audit-check.php` and parse `.github/workflows/test.yml`; bootstrap `tests/bootstrap.php` requires the Composer autoloader (which loads `detain/phlix-shared`).
 - **Scripts**: `scripts/security-audit-check.php` — runs `composer audit --locked --format=json` over the whole lock, labels each finding `[require]`/`[require-dev]`, blocks on any advisory, and floors the corpus (`MIN_AUDITED_PACKAGES` 28, `MIN_AUDITED_DEV_PACKAGES` 24); `scripts/add-headers.php` — inserts the `@copyright`/`@license` file docblock.
 - **Config**: `phpunit.xml` (bootstrap + `src` coverage, cobertura report), `phpstan.neon` (level 9 over `src` and `scripts`), `phpcs.xml` (PSR-12 via `<rule ref="PSR12"/>` — PHPCS 4.x uses `ref`, not `name` — plus `Squiz.Commenting.DocCommentAlignment`; `PSR1.Files.SideEffects` excluded for `scripts/`). **CI**: `.github/workflows/test.yml` runs install + phpunit + PHPStan + PHPCS on push to `master`/`main` and on PRs, uploading coverage to Codacy from the `8.3` matrix leg only, then a final `composer-audit` job running `php scripts/security-audit-check.php`.
 
@@ -43,7 +42,7 @@ php scripts/add-headers.php                  # idempotent @copyright/@license he
 
 ## Known drift
 
-- None open. The historical legacy-namespace drift (`Phlix\Plugins\Contract\LifecycleInterface`) was retired in `355c445`: `dev-stubs/LifecycleInterface.php` and `tests/bootstrap.php` use the live `Phlix\Shared\Plugin\LifecycleInterface`, as does the README. Keep the dev stub byte-compatible with the canonical `detain/phlix-shared` `src/Plugin/LifecycleInterface.php` if you edit the contract.
+- None open. The historical legacy-namespace drift (`Phlix\Plugins\Contract\LifecycleInterface`) was retired in `355c445`. The offline contract stub `dev-stubs/LifecycleInterface.php` and the `interface_exists` fallback in `tests/bootstrap.php` were removed once `detain/phlix-shared` became a hard Composer dependency: `Phlix\Shared\Plugin\LifecycleInterface` now resolves solely from the autoloader, as do the README and `tests/`.
 
 ## Git & tooling
 

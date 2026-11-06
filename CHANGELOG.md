@@ -4,6 +4,38 @@ All notable changes to `phlix-plugin-example` are documented here.
 Historical entries are kept verbatim; corrections fold in as new
 entries (estate precedent).
 
+## Unreleased — 2026-11-06
+
+### Fixed — scaffold documentation truth and dead-stub removal
+
+- `src/HelloMetadataProvider.php`: the developer-guide `@link` now points at
+  the `detain/phlix-docs` repository (the old `detain/phlix` path 404s) —
+  the same URL the README already used. The class docblock and the
+  `$greeting` property comment drop the unstable "Phase A.6 / A.7" roadmap
+  lettering and state the shipped behaviour instead: settings reach an
+  instance only through `Phlix\Shared\Plugin\ConfigurableInterface`, which
+  this reference class does not implement, so a `plugin.json` override is
+  persisted but never delivered.
+- `.opencode/skills/metadata-provider-class/SKILL.md`: the file-header rule
+  (Critical list and Step 2) now emits the `@copyright`/`@license` docblock
+  above `declare(strict_types=1);`, matching the reference class and
+  `scripts/add-headers.php` rather than contradicting both. A new Critical
+  warning states that the host never calls `lookup()` and that a real
+  provider is registered through `MetadataSourceInterface` with settings via
+  `ConfigurableInterface`; the worked TMDB example, the `onEnable()` guidance,
+  and the Step 7 note are rewritten around those interfaces, and the
+  "byte-for-byte consistent" overclaim is replaced with a plain statement
+  that the skill pre-wires the documented container-retention extension point.
+- Removed the offline `dev-stubs/LifecycleInterface.php` contract stub and the
+  unreachable `interface_exists` fallback in `tests/bootstrap.php`:
+  `detain/phlix-shared` is a hard Composer dependency, so the real
+  `Phlix\Shared\Plugin\LifecycleInterface` is always on the classpath and the
+  fallback branch could never fire (proven: `interface_exists` is true
+  immediately after the unconditional autoloader require). Skill, `AGENTS.md`,
+  and `CLAUDE.md` prose that pointed at the stub now reference the shared
+  contract, and the unsatisfiable "keep the stub byte-compatible" instruction
+  is retired.
+
 ## 0.1.2 — 2026-11-03
 
 Release stamp: manifest `version` bumped 0.1.1 → 0.1.2 (tag `v0.1.2`) so the

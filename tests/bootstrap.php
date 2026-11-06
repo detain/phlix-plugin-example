@@ -12,23 +12,12 @@ declare(strict_types=1);
 /**
  * Test bootstrap for the plugin's own PHPUnit suite.
  *
- * The plugin's runtime dependency is the Phlix server, which provides
- * `Phlix\Shared\Plugin\LifecycleInterface`. In an installed plugin
- * (`var/plugins/phlix-plugin-example/`) that interface is resolved by
- * the host application's autoloader. When the plugin is tested in
- * isolation — `composer install && vendor/bin/phpunit` from this
- * repo — the host isn't on the classpath, so we declare a minimal stub
- * here that matches the published shape.
- *
- * The stub is registered only when the real interface is absent: when the
- * host application (or `detain/phlix-shared` through Composer) provides
- * `Phlix\Shared\Plugin\LifecycleInterface`, this file defers to it and the
- * suite exercises the genuine published contract. The stub exists purely so
- * a bare checkout of this repository can run its own tests.
+ * The reference class implements `Phlix\Shared\Plugin\LifecycleInterface`,
+ * published in `detain/phlix-shared`. That package is a hard Composer
+ * dependency (see `composer.json`), so requiring the autoloader below
+ * always places the genuine published contract on the classpath — the
+ * suite exercises the real interface, whether run in isolation or inside
+ * a host application. There is intentionally no local stub fallback.
  */
 
 require __DIR__ . '/../vendor/autoload.php';
-
-if (!interface_exists(\Phlix\Shared\Plugin\LifecycleInterface::class)) {
-    require __DIR__ . '/../dev-stubs/LifecycleInterface.php';
-}

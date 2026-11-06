@@ -37,14 +37,14 @@ use Psr\Container\ContainerInterface;
  *   Real plugins that need a container should store it as a property.
  * - {@see subscribedEvents()} returns an empty array; this plugin does
  *   not listen for PSR-14 events. A real metadata provider can leave
- *   this empty too — Phase A's `MetadataManager` invokes providers
- *   directly rather than via the dispatcher.
+ *   this empty too — `Phlix\Media\Metadata\MetadataManager` invokes
+ *   providers directly rather than via the PSR-14 dispatcher.
  *
  * ## Provenance
  *
  * The `LifecycleInterface` lives in `Phlix\Shared\Plugin\LifecycleInterface`.
  *
- * @link https://github.com/detain/phlix/blob/master/docs/plugins/developer-guide.md Phlix plugin developer guide
+ * @link https://github.com/detain/phlix-docs/blob/master/docs/plugins/developer-guide.md Phlix plugin developer guide
  * @package Phlix\PluginExample
  * @since 0.1.0
  */
@@ -67,9 +67,12 @@ final class HelloMetadataProvider implements LifecycleInterface
 
     /**
      * Greeting returned as the metadata title. Defaults to
-     * {@see DEFAULT_GREETING}; can be overridden via the constructor
-     * for tests or by future settings wiring (Phase A.6 reads the
-     * default; per-install overrides come with Phase A.7 settings UI).
+     * {@see DEFAULT_GREETING} and can be overridden via the constructor
+     * (tests do this). A `plugin.json` override is persisted but never
+     * reaches this instance: settings are delivered only to classes
+     * implementing `Phlix\Shared\Plugin\ConfigurableInterface`, which
+     * this reference class does not. See the README "What it does"
+     * warning for the full contract tour.
      */
     private string $greeting;
 

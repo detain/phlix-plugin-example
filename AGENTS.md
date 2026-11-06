@@ -22,7 +22,6 @@ php scripts/security-audit-check.php   # security gate: audits the whole lock (r
 - **Manifest**: `plugin.json` — `entry`, `settings.greeting` (default `"Hello, World"`), `events: []`, `version` `0.1.2`.
 - **Package**: `composer.json` — PSR-4 `Phlix\PluginExample\` → `src/`, tests → `tests/`.
 - **Tests**: `tests/HelloMetadataProviderTest.php` (12 tests: `lookup()`, `subscribedEvents()`, and the `onEnable()`/`onDisable()` no-ops), `tests/SecurityAuditCheckTest.php` (30 guard tests that execute `scripts/security-audit-check.php` and parse `.github/workflows/test.yml`), bootstrap `tests/bootstrap.php`; config `phpunit.xml`.
-- **Stub**: `dev-stubs/LifecycleInterface.php` — fallback only when `detain/phlix-shared` is absent.
 - **Scripts**: `scripts/security-audit-check.php` — `composer audit --locked --format=json` over the whole lock, findings labelled `[require]`/`[require-dev]`, blocking on advisories, corpus floored at `MIN_AUDITED_PACKAGES` 28 / `MIN_AUDITED_DEV_PACKAGES` 24; `scripts/add-headers.php` — idempotent `@copyright`/`@license` header insertion.
 - **Lint config**: `phpstan.neon` (level 9 over `src` and `scripts`), `phpcs.xml` (PSR-12 via `<rule ref="PSR12"/>` — PHPCS 4.x uses `ref`, not `name — plus `Squiz.Commenting.DocCommentAlignment`, with `PSR1.Files.SideEffects` excluded for the `scripts/` entry points).
 - **CI**: `.github/workflows/test.yml` runs install + phpunit + PHPStan + PHPCS on push to `master`/`main` and on PRs, and uploads the phpunit cobertura coverage report to Codacy from the `8.3` matrix leg only; a final `composer-audit` job runs `php scripts/security-audit-check.php`.
@@ -37,7 +36,7 @@ php scripts/security-audit-check.php   # security gate: audits the whole lock (r
 
 ## Known drift
 
-- None open. The historical legacy-namespace drift (`Phlix\Plugins\Contract\LifecycleInterface`) was retired in `355c445`: `dev-stubs/LifecycleInterface.php`, `tests/bootstrap.php` and the README all use the live `Phlix\Shared\Plugin\LifecycleInterface`. Keep the dev stub byte-compatible with the canonical `detain/phlix-shared` `src/Plugin/LifecycleInterface.php` when editing the contract.
+- None open. The historical legacy-namespace drift (`Phlix\Plugins\Contract\LifecycleInterface`) was retired in `355c445`. The offline contract stub `dev-stubs/LifecycleInterface.php` and the `interface_exists` fallback in `tests/bootstrap.php` were removed once `detain/phlix-shared` became a hard Composer dependency: `Phlix\Shared\Plugin\LifecycleInterface` now resolves solely from the autoloader, so there is no local stub to keep in sync.
 
 ## Git
 
