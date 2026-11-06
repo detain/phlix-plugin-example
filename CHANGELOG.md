@@ -67,6 +67,26 @@ entries (estate precedent).
   paths, and the settings seam now read as demonstrated, and the fork
   instructions tell authors to keep the interfaces and replace their bodies.
 
+### Added — manifest-to-contract pins
+
+- `tests/ManifestContractTest.php` (3 tests): the suite never checked the
+  manifest-to-contract relationship, so a class rename, a dropped shared
+  interface, or a manifest typo shipped green. The new pins decode
+  `plugin.json` (failing loudly on malformed JSON in the shared helper),
+  prove its `entry` resolves through the Composer autoloader and names
+  `HelloMetadataProvider`, assert that the entry class implements the
+  shipped trio `LifecycleInterface` / `ConfigurableInterface` /
+  `MetadataSourceInterface` (imported from `detain/phlix-shared` — with the
+  dev-stubs fallback retired these are the only definitions on the
+  classpath), and compare `settings.greeting.default` to the class's
+  `DEFAULT_GREETING` constant, pinning the "mirrors the default" docblock
+  claim that was previously unverified. Teeth proven by mutation: an entry
+  naming a nonexistent class reddens exactly the two entry-dependent pins,
+  dropping an interface from the class reddens exactly the conformance pin,
+  and diverging the manifest default reddens exactly the mirror pin.
+  Suite 42 → 45 tests (153 → 169 assertions); the `AGENTS.md`/`CLAUDE.md`
+  Tests inventory names the new file in this same commit.
+
 ## 0.1.2 — 2026-11-03
 
 Release stamp: manifest `version` bumped 0.1.1 → 0.1.2 (tag `v0.1.2`) so the
