@@ -156,8 +156,12 @@ the `example` metadata source, so `search('hello')` /
 `getDetails('hello')` answer for movie items — with the operator's
 `greeting` override applied.
 
-The in-process demo is what `tests/HelloMetadataProviderTest.php`
-exercises, mirroring the same path:
+The in-process demo below mirrors that host path, and
+`tests/HelloMetadataProviderTest.php` pins it line for line
+(`test_readme_in_process_demo_holds`) alongside behavioral tests for
+the `configure()` absorb rule (missing, empty-string and non-string
+`greeting` values keep the last good greeting) and the `search()` →
+`getDetails()` pair:
 
 ```php
 $provider = new \Phlix\PluginExample\HelloMetadataProvider();

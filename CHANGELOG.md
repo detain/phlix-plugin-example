@@ -6,6 +6,28 @@ entries (estate precedent).
 
 ## Unreleased — 2026-11-11
 
+### Added — behavioral tests for the host-driven surface
+
+- `tests/HelloMetadataProviderTest.php`: the suite covered only
+  `lookup()`, `subscribedEvents()` and the lifecycle no-ops, yet the
+  README claimed it exercised the `configure()` → `getDetails()` demo.
+  New tests pin `configure()` (a string `greeting` reaches both
+  `search()` and `getDetails()` and overrides the constructor value;
+  unrelated keys are ignored; a missing key, an empty string and every
+  non-string shape — null, int, float, bool, list, Stringable object —
+  keep the default *and* the last good greeting; a whitespace-only string
+  passes through verbatim), `search()` (fixture id only, exact match,
+  options ignored), `getDetails()` (routes the fixture id through
+  `lookup()`, unknown ids and the fixture *path* return `[]`), the
+  search-id-feeds-getDetails triad order, and the README "Use" snippet
+  line for line. Teeth proven by mutation: dropping the empty-string
+  arm, the `is_string` arm, the `greeting` key, the search guard, or
+  loosening the getDetails id match each reddens the suite. Provider
+  suite 12 → 41 tests; whole suite 45 → 74 tests (169 → 224
+  assertions).
+- `README.md`: the "Use" paragraph now names the test that pins its
+  snippet and states what the absorb rule keeps, so the claim is true.
+
 ### Fixed — stale `detain/phlix-shared` pin in the agent guides
 
 - `AGENTS.md` and `CLAUDE.md` stated the dependency as
