@@ -237,7 +237,7 @@ metadata plugins, not by this demo:
 
 ## Fork as a starter
 
-This repository is intentionally small (one PHP class, two test files
+This repository is intentionally small (one PHP class, three test files
 plus a bootstrap) so you can copy it as the seed for your own plugin:
 
 1. **Fork** or `git clone` this repo, then rename the new directory.
@@ -261,7 +261,10 @@ plus a bootstrap) so you can copy it as the seed for your own plugin:
    > Settings only ever reach your instance through
    > `ConfigurableInterface::configure()`.
 3. Edit **`composer.json`** — rename the package, change the PSR-4
-   prefix under `autoload.psr-4`.
+   prefix under `autoload.psr-4`. The `repositories` entry (a `vcs`
+   source for `detain/phlix-shared`) exists only because that package
+   is fetched from GitHub; drop it, or replace it with your own source,
+   once you resolve `phlix-shared` from Packagist.
 4. Rewrite **`src/HelloMetadataProvider.php`** with your own
    implementation, keeping `onEnable()` cheap and doing the heavy work
    behind the contract methods. The reference class already implements
@@ -270,15 +273,28 @@ plus a bootstrap) so you can copy it as the seed for your own plugin:
    `ConfigurableInterface`) — keep the interfaces and replace their
    bodies with real upstream calls. The didactic `lookup()` helper is
    the one piece you may drop: the host never calls it, so a fork
-   that keeps only that shape enables and does nothing. If the new
-   class needs an API key or calls an upstream service, follow
+   that keeps only that shape enables and does nothing. Edit the
+   `SOURCE_NAME` constant (`'example'`) alongside any class rename:
+   `sourceName()` returns it, and it is the slug the host keys your
+   source on in `metadata.provider_priority`. If the new class needs
+   an API key or calls an upstream service, follow
    **Settings & secrets** and **Outbound calls**
    above — do not improvise key handling.
 5. Replace the tests in **`tests/`** to match — but **keep**
    `tests/SecurityAuditCheckTest.php`, `scripts/security-audit-check.php`
    and the `composer-audit` job in `.github/workflows/test.yml`. That
    trio is the estate's whole-lock audit gate, and the guard test
-   reddens your build if you neuter it.
+   reddens your build if you neuter it. Two fork chores ride with it:
+   - Re-measure your own `composer.lock` and re-pin **both** floors in
+     `scripts/security-audit-check.php` (`MIN_AUDITED_PACKAGES` and
+     `MIN_AUDITED_DEV_PACKAGES`), updating the guard test's restated
+     copies (`MIN_PACKAGES`/`MIN_DEV_PACKAGES` in
+     `tests/SecurityAuditCheckTest.php`) in the same commit — the values
+     here are measured on this repo's lock, and
+     `testFloorsMatchTheScript()` reddens when the two copies disagree.
+   - Delete `scripts/add-headers.php`, or re-parameterize its
+     `@copyright` line with your own name before running it — as
+     shipped it stamps this repo's author onto every file.
 6. Publish so the install flow can fetch you: a direct-200 archive
    URL (or a stub `plugin.json` carrying a `source` field that names
    one), plus a catalog pin for remote sources — see **Install** above
