@@ -53,7 +53,7 @@ git checkout master && git pull && git checkout -b feature/<concern>
 ```
 
 - No project-specific MCP servers needed; the GitHub MCP (if enabled) covers PRs for `https://github.com/detain/phlix-plugin-example.git`.
-- Caliber skills under `.claude/skills/` (`find-skills`, `save-learning`, `setup-caliber`) keep agent configs synced.
+- Tracked agent context under `.claude/`: `skills/` (project skills `fork-as-starter`, `metadata-provider-class`, `plugin-manifest`, `phpunit-test`, the generic PHP/PHPUnit skills, and the Caliber skills `find-skills`, `save-learning`, `setup-caliber` that keep agent configs synced), `rules/`, and `hooks/`. `.claude/settings.json` is deliberately untracked (it hardcodes a machine-specific `caliber` path); see the `.claude/*` block in `.gitignore`.
 
 <!-- caliber:managed:pre-commit -->
 ## Before Committing

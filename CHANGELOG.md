@@ -40,6 +40,41 @@ entries (estate precedent).
   when written but went stale once `composer.json` moved on; the entry
   is kept verbatim as history and superseded by this one.
 
+### Changed — README fork-as-starter checklist
+
+- `README.md` "Fork as a starter": the intro now counts three test
+  files plus a bootstrap (`HelloMetadataProviderTest`,
+  `ManifestContractTest`, `SecurityAuditCheckTest`; it said two), and
+  the checklist names the duties a fork previously had to discover:
+  drop or replace the `composer.json` `repositories` VCS entry for
+  `detain/phlix-shared` once it resolves from Packagist; edit the
+  `SOURCE_NAME` slug (`'example'`) alongside any class rename; re-measure
+  the lock and re-pin both `MIN_AUDITED_PACKAGES` /
+  `MIN_AUDITED_DEV_PACKAGES` floors together with the guard test's
+  restated copies; and delete or re-parameterize the `@copyright` line
+  `scripts/add-headers.php` stamps.
+
+### Fixed — `.claude/` agent context was silently untrackable
+
+- `.gitignore` excluded the `.claude/` directory itself, so git never
+  descended into it and the `!.claude/{settings.json,rules/,skills/,hooks/}`
+  negations were inert: nothing under `.claude/` was ever committed, and
+  `CLAUDE.md`'s Caliber step (`git add ... .claude/ ...`) staged nothing.
+  The rule is now `.claude/*` (contents, not the directory), so `rules/`,
+  `skills/` and `hooks/` are tracked. `.claude/settings.json` stays
+  ignored on purpose: it hardcodes a machine-specific `caliber` path
+  (same call as `phlix-server` / `phlix-hub`).
+- The now-tracked `.claude` skill and rule copies were corrected before
+  their first commit: `metadata-provider-class` is synced to its fixed
+  `.opencode/skills/` twin; `fork-as-starter`, `plugin-manifest`,
+  `phpunit-test` and the `plugin-lifecycle` / `testing-patterns` rules
+  no longer cite the removed `dev-stubs/LifecycleInterface.php`, the
+  retired `Phlix\Plugins\Contract` namespace as live drift, or a stale
+  `detain/phlix-shared ^0.6` pin, and now teach the three shared
+  contracts the host consults, manifest `events` as `EventNameMap`
+  aliases (not class-strings), and the fork's audit-floor and
+  `@copyright` chores. `CLAUDE.md` lists what `.claude/` tracks.
+
 ## Unreleased — 2026-11-06
 
 ### Fixed — scaffold documentation truth and dead-stub removal
