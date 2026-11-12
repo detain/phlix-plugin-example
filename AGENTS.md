@@ -1,6 +1,6 @@
 # phlix-plugin-example — Agent Guide
 
-Reference **metadata-provider** plugin for [Phlix](https://github.com/detain/phlix-server): one `final` PHP class exercising the plugin contract trio (lifecycle, settings delivery via `configure()`, metadata source). PHP `>=8.3`, PHPUnit `^10`, depends on `detain/phlix-shared ^0.21.0` (VCS repo in `composer.json`).
+Reference **metadata-provider** plugin for [Phlix](https://github.com/detain/phlix-server): one `final` PHP class exercising the plugin contract trio (lifecycle, settings delivery via `configure()`, metadata source). PHP `>=8.3`, PHPUnit `^10`, depends on `detain/phlix-shared` (VCS repo; the version constraint lives only in `composer.json` — the single source of truth, so it is deliberately not restated here).
 
 ## Commands
 

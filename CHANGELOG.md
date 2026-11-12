@@ -4,6 +4,20 @@ All notable changes to `phlix-plugin-example` are documented here.
 Historical entries are kept verbatim; corrections fold in as new
 entries (estate precedent).
 
+## Unreleased — 2026-11-11
+
+### Fixed — stale `detain/phlix-shared` pin in the agent guides
+
+- `AGENTS.md` and `CLAUDE.md` stated the dependency as
+  `detain/phlix-shared ^0.21.0` while `composer.json` requires
+  `^0.54.0`. Both guides now name the package without a version and
+  point at `composer.json` as the single source of truth, so the prose
+  can no longer drift behind future pin rotations.
+- Correction to the 2026-10-30 entry below ("`detain/phlix-shared ^0.6`
+  → `^0.21.0` (matching `composer.json`)"): that rotation was accurate
+  when written but went stale once `composer.json` moved on; the entry
+  is kept verbatim as history and superseded by this one.
+
 ## Unreleased — 2026-11-06
 
 ### Fixed — scaffold documentation truth and dead-stub removal
