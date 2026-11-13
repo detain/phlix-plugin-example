@@ -6,6 +6,10 @@ entries (estate precedent).
 
 ## Unreleased — 2026-11-11
 
+### Changed
+
+- Audit gate (MAL-17): `scripts/security-audit-check.php` messages no longer print the slash-stem plurals "advisory/ies" / "repository/ies"; they pluralise correctly (1 advisory, 2 advisories). Estate family wave; test mirrors updated in lockstep.
+
 ### Added — behavioral tests for the host-driven surface
 
 - `tests/HelloMetadataProviderTest.php`: the suite covered only
