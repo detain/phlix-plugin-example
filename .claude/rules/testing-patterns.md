@@ -5,7 +5,7 @@ paths:
 
 # Test Conventions
 
-- PHPUnit `^10` via `vendor/bin/phpunit`; config in `phpunit.xml`, bootstrap `tests/bootstrap.php`.
+- PHPUnit `^12.5` via `vendor/bin/phpunit`; config in `phpunit.xml`, bootstrap `tests/bootstrap.php`.
 - Test classes are `final`, namespace `Phlix\PluginExample\Tests\`, extend `PHPUnit\Framework\TestCase`.
 - Name methods `test_snake_case_description()`; assert exact results with `assertSame()`.
 - Reference the fixture via `HelloMetadataProvider::FIXTURE_PATH`, not a literal string.

@@ -1,12 +1,12 @@
 ---
 name: phpunit-test
-description: Adds a PHPUnit ^10 test under tests/ mirroring tests/HelloMetadataProviderTest.php for the phlix-plugin-example project: a final TestCase in namespace Phlix\PluginExample\Tests\, test_snake_case methods, assertSame() assertions, and fixtures referenced via HelloMetadataProvider::FIXTURE_PATH. Use when the user says 'write a test', 'add a unit test', 'test this class/method', or runs vendor/bin/phpunit. Do NOT use for non-PHP tests, JS tests, editing phpunit.xml setup, or changing tests/bootstrap.php.
+description: Adds a PHPUnit ^12.5 test under tests/ mirroring tests/HelloMetadataProviderTest.php for the phlix-plugin-example project: a final TestCase in namespace Phlix\PluginExample\Tests\, test_snake_case methods, assertSame() assertions, and fixtures referenced via HelloMetadataProvider::FIXTURE_PATH. Use when the user says 'write a test', 'add a unit test', 'test this class/method', or runs vendor/bin/phpunit. Do NOT use for non-PHP tests, JS tests, editing phpunit.xml setup, or changing tests/bootstrap.php.
 paths:
   - tests/**/*.php
 ---
 # PHPUnit Test (phlix-plugin-example)
 
-Adds a PHPUnit `^10` test file under `tests/` that is byte-for-byte consistent with the existing `tests/HelloMetadataProviderTest.php`. One `final` TestCase per class under test.
+Adds a PHPUnit `^12.5` test file under `tests/` that is byte-for-byte consistent with the existing `tests/HelloMetadataProviderTest.php`. One `final` TestCase per class under test.
 
 ## Critical
 
@@ -102,4 +102,4 @@ Adds a PHPUnit `^10` test file under `tests/` that is byte-for-byte consistent w
 
 - **`Failed asserting that two arrays are identical`**: `assertSame` is order- and type-strict. 1. Confirm the expected array key order matches the source return (`['title' => ...]`). 2. Ensure you didn't use `==`-style expectations — values like `'1'` vs `1` will differ. 3. Re-read the method's `@return` shape in `src/`.
 
-- **`Test method ... is not annotated/recognized`**: PHPUnit 10 discovers methods prefixed with `test`. Ensure the method name starts with `test_` and is `public ... : void` with no params unless a `#[DataProvider]` feeds it (this project does not use `#[Test]` attributes or `@test` docblocks).
+- **`Test method ... is not annotated/recognized`**: PHPUnit 12 discovers methods prefixed with `test`. Ensure the method name starts with `test_` and is `public ... : void` with no params unless a `#[DataProvider]` feeds it (this project does not use `#[Test]` attributes or `@test` docblocks).

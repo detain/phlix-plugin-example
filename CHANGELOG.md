@@ -8,6 +8,7 @@ entries (estate precedent).
 
 ### Changed
 
+- Dependency upgrade: `phpunit/phpunit` `^10.0` -> `^12.5` (12.5.44; PHPUnit 13 needs PHP 8.4+, so 12.5 is the newest line that keeps the declared `>=8.3` floor), `phpstan/phpstan` 2.3.1 -> 2.3.5, full transitive refresh in `composer.lock`. `detain/phlix-shared` pin untouched. `phpunit.xml` already valid for 12; the one `createMock` without expectations became `createStub`. CI actions bumped: `actions/checkout` v6.1.0 -> v7.0.1 and `shivammathur/setup-php` to the current v2.40.0 (both SHA-pinned). Audit clean (32 locked packages).
 - Audit gate (MAL-17): `scripts/security-audit-check.php` messages no longer print the slash-stem plurals "advisory/ies" / "repository/ies"; they pluralise correctly (1 advisory, 2 advisories). Estate family wave; test mirrors updated in lockstep.
 
 ### Added — behavioral tests for the host-driven surface

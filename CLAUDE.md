@@ -1,6 +1,6 @@
 # phlix-plugin-example
 
-Reference **metadata-provider** plugin for [Phlix](https://github.com/detain/phlix-server): one `final` PHP class exercising the plugin contract trio (lifecycle, settings delivery via `configure()`, metadata source). PHPUnit `^10`, depends on `detain/phlix-shared` (version constraint: see `composer.json`, the single source of truth).
+Reference **metadata-provider** plugin for [Phlix](https://github.com/detain/phlix-server): one `final` PHP class exercising the plugin contract trio (lifecycle, settings delivery via `configure()`, metadata source). PHPUnit `^12.5`, depends on `detain/phlix-shared` (version constraint: see `composer.json`, the single source of truth).
 
 ## Commands
 

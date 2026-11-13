@@ -65,7 +65,7 @@ final class HelloMetadataProviderTest extends TestCase
     public function test_on_enable_accepts_container_and_returns_void(): void
     {
         $provider = new HelloMetadataProvider();
-        $container = $this->createMock(ContainerInterface::class);
+        $container = $this->createStub(ContainerInterface::class);
 
         // Capture the return value to verify it is void
         $returnValue = $provider->onEnable($container);
